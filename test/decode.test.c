@@ -3,8 +3,8 @@
 #include "../src/mqttCodec.h"
 
 int32_t currentSize = 0;
-uint8_t failedAssertions = 0;
-int8_t callbackCounter = 0;
+uint16_t failedAssertions = 0;
+uint8_t callbackCounter = 0;
 
 void itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback(struct MqttMessage *m)
 {
@@ -28,32 +28,74 @@ void itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback(s
         failedAssertions++;
     }
     
+    if (m->controlPacketType != 0x30)
+    {
+        printf("Callback: Expected controlPacketType to be 0x30 but was 0x%X\n", m->controlPacketType);
+        failedAssertions++;
+    }
+        
+    if (m->flags != 0x00)
+    {
+        printf("Callback: Expected flags to be 0x00 but was 0x%X\n", m->flags);
+        failedAssertions++;
+    }
+
     if (m->remainingSize != 0)
     {
         printf("Callback: Expected remainingSize to be 0 but was %i\n", m->remainingSize);
         failedAssertions++;
     }
 
-    if (m->controlPacketType != 0x60)
+    if (m->variableHeaderSize != 0)
     {
-        printf("Callback: Expected controlPacketType to be 0x60 but was 0x%X\n", m->controlPacketType);
+        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m->variableHeaderSize);
         failedAssertions++;
     }
-        
-    if (m->flags != 0x02)
+
+    if (m->variableHeader != 0)
     {
-        printf("Callback: Expected flags to be 0x02 but was %X\n", m->flags);
+        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m->variableHeader));
+        failedAssertions++;
+    }
+
+    if (m->payloadSize != 0)
+    {
+        printf("Callback: Expected payloadSize to be 0 but was %i\n", m->payloadSize);
+        failedAssertions++;
+    }
+
+    if (m->payload != 0)
+    {
+        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m->bytes[2], *(m->payload));
+        failedAssertions++;
+    }
+
+    if (m->packetIdentifier != 0)
+    {
+        printf("Callback: Expected packetIdentifier to be 0 but was %i\n", m->packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m->publishTopicNameSize != 0)
+    {
+        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m->publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m->publishTopicName != 0)
+    {
+        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 }
 
-static int8_t itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSize()
+static uint16_t itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSize()
 {
     printf("It should decode a message with a 2 byte header and a zero length remaining size\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x00 };
+    uint8_t bytes[10] = { 0x30, 0x00 };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -65,7 +107,7 @@ static int8_t itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSize(
 
     if (callbackCounter != 1)
     {
-        printf("Expected callbackCalled to be 1 but was %i\n", callbackCounter);
+        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -107,32 +149,74 @@ void itShouldDecodeAMessageWithA2ByteHeaderCallback(struct MqttMessage *m)
         failedAssertions++;
     }
     
+    if (m->controlPacketType != 0x30)
+    {
+        printf("Callback: Expected controlPacketType to be 0x30 but was 0x%X\n", m->controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m->flags != 0x00)
+    {
+        printf("Callback: Expected flags to be 0x00 but was 0x%X\n", m->flags);
+        failedAssertions++;
+    }
+
     if (m->remainingSize != 1)
     {
         printf("Callback: Expected remainingSize to be 1 but was %i\n", m->remainingSize);
         failedAssertions++;
     }
 
-    if (m->controlPacketType != 0x60)
+    if (m->variableHeaderSize != 0)
     {
-        printf("Callback: Expected controlPacketType to be 0x60 but was %X\n", m->controlPacketType);
+        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m->variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m->flags != 0x02)
+    if (m->variableHeader != 0)
     {
-        printf("Callback: Expected flags to be 0x02 but was %X\n", m->flags);
+        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m->variableHeader));
+        failedAssertions++;
+    }
+
+    if (m->payloadSize != 0)
+    {
+        printf("Callback: Expected payloadSize to be 0 but was %i\n", m->payloadSize);
+        failedAssertions++;
+    }
+
+    if (m->payload != &(m->bytes[2]))
+    {
+        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m->bytes[2], *(m->payload));
+        failedAssertions++;
+    }
+
+    if (m->packetIdentifier != 0x00)
+    {
+        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m->packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m->publishTopicNameSize != 0)
+    {
+        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m->publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m->publishTopicName != 0)
+    {
+        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 }
 
-static int8_t itShouldDecodeAMessageWithA2ByteHeader()
+static uint16_t itShouldDecodeAMessageWithA2ByteHeader()
 {
     printf("It should decode a message with a 2 byte header\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x01, 0xFF };
+    uint8_t bytes[10] = { 0x30, 0x01, 0xFF };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -144,7 +228,7 @@ static int8_t itShouldDecodeAMessageWithA2ByteHeader()
 
     if (callbackCounter != 1)
     {
-        printf("Expected callbackCalled to be 1 but was %i\n", callbackCounter);
+        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -169,13 +253,13 @@ void itShouldDecodeAMessageWithA3ByteHeaderCallback(struct MqttMessage *m)
     callbackCounter++;
 }
 
-static int8_t itShouldDecodeAMessageWithA3ByteHeader()
+static uint16_t itShouldDecodeAMessageWithA3ByteHeader()
 {
     printf("It should decode a message with a 3 byte header\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x81, 0x02, 0xFF };
+    uint8_t bytes[10] = { 0x30, 0x81, 0x02, 0xFF };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -187,7 +271,7 @@ static int8_t itShouldDecodeAMessageWithA3ByteHeader()
 
     if (callbackCounter != 0)
     {
-        printf("Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -215,21 +299,63 @@ static int8_t itShouldDecodeAMessageWithA3ByteHeader()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 257)
     {
         printf("Expected remainingSize to be 257 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Callback: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != &(m.bytes[3]))
+    {
+        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m.bytes[3], *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -242,13 +368,13 @@ void itShouldDecodeAMessageWithA4ByteHeaderCallback(struct MqttMessage *m)
     callbackCounter++;
 }
 
-static int8_t itShouldDecodeAMessageWithA4ByteHeader()
+static uint16_t itShouldDecodeAMessageWithA4ByteHeader()
 {
     printf("It should decode a message with a 4 byte header\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x81, 0x82, 0x03, 0xFF };
+    uint8_t bytes[10] = { 0x30, 0x81, 0x82, 0x03, 0xFF };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -260,7 +386,7 @@ static int8_t itShouldDecodeAMessageWithA4ByteHeader()
 
     if (callbackCounter != 0)
     {
-        printf("Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -288,21 +414,63 @@ static int8_t itShouldDecodeAMessageWithA4ByteHeader()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 49409)
     {
         printf("Expected remainingSize to be 49409 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Callback: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != &(m.bytes[4]))
+    {
+        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m.bytes[4], *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -315,13 +483,13 @@ void itShouldDecodeAMessageWithA5ByteHeaderCallback(struct MqttMessage *m)
     callbackCounter++;
 }
 
-static int8_t itShouldDecodeAMessageWithA5ByteHeader()
+static uint16_t itShouldDecodeAMessageWithA5ByteHeader()
 {
     printf("It should decode a message with a 5 byte header\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x81, 0x82, 0x83, 0x04, 0xFF };
+    uint8_t bytes[10] = { 0x30, 0x81, 0x82, 0x83, 0x04, 0xFF };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -333,7 +501,7 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeader()
 
     if (callbackCounter != 0)
     {
-        printf("Expected callbackCalled to be 1 but was %i\n", callbackCounter);
+        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -361,21 +529,63 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeader()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 8438017)
     {
         printf("Expected remainingSize to be 8438017 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Callback: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != &(m.bytes[5]))
+    {
+        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m.bytes[5], *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -388,13 +598,13 @@ void itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunksCallback(struc
     callbackCounter++;
 }
 
-static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
+static uint16_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
 {
     printf("It should decode a message with a 5 byte header given through 1 byte chunks\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x81, 0x82, 0x83, 0x04, 0xFF };
+    uint8_t bytes[10] = { 0x30, 0x81, 0x82, 0x83, 0x04, 0xFF };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -406,7 +616,7 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
 
     if (callbackCounter != 0)
     {
-        printf("Byte 1: Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Byte 1: Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -434,21 +644,63 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Byte 1: Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Byte 1: Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 0)
     {
         printf("Byte 1: Expected remainingSize to be 0 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Byte 1: Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Byte 1: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Byte 1: Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Byte 1: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Byte 1: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != 0)
+    {
+        printf("Byte 1: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Byte 1: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Byte 1: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Byte 1: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -458,7 +710,7 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
 
     if (callbackCounter != 0)
     {
-        printf("Byte 2: Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Byte 2: Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -486,21 +738,63 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Byte 2: Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Byte 2: Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 1)
     {
         printf("Byte 2: Expected remainingSize to be 1 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Byte 2: Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Byte 2: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Byte 2: Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Byte 2: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Byte 2: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != 0)
+    {
+        printf("Byte 2: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Byte 2: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Byte 2: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Byte 2: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -510,7 +804,7 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
 
     if (callbackCounter != 0)
     {
-        printf("Byte 3: Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Byte 3: Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -538,21 +832,63 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Byte 3: Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Byte 3: Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 257)
     {
         printf("Byte 3: Expected remainingSize to be 257 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Byte 3: Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Byte 3: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Byte 3: Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Byte 3: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Byte 3: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != 0)
+    {
+        printf("Byte 3: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Byte 3: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Byte 3: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Byte 3: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -562,7 +898,7 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
 
     if (callbackCounter != 0)
     {
-        printf("Byte 4: Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Byte 4: Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -596,15 +932,57 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.controlPacketType != 0x30)
     {
-        printf("Byte 4: Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Byte 4: Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.flags != 0x00)
     {
-        printf("Byte 4: Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Byte 4: Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
+    if (m.variableHeaderSize != 0)
+    {
+        printf("Byte 4: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
+        failedAssertions++;
+    }
+
+    if (m.variableHeader != 0)
+    {
+        printf("Byte 4: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Byte 4: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != 0)
+    {
+        printf("Byte 4: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Byte 4: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Byte 4: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Byte 4: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -614,7 +992,7 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
 
     if (callbackCounter != 0)
     {
-        printf("Byte 5: Expected callbackCalled to be 0 but was %i\n", callbackCounter);
+        printf("Byte 5: Expected callbackCounter to be 0 but was %i\n", callbackCounter);
         failedAssertions++;
     }
 
@@ -642,21 +1020,63 @@ static int8_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Byte 5: Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Byte 5: Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
     if (m.remainingSize != 8438017)
     {
         printf("Byte 5: Expected remainingSize to be 8438017 but was %i\n", m.remainingSize);
         failedAssertions++;
     }
 
-    if (m.controlPacketType != 0x60)
+    if (m.variableHeaderSize != 0)
     {
-        printf("Byte 5: Expected controlPacketType to be 0x60 but was %X\n", m.controlPacketType);
+        printf("Byte 5: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
         failedAssertions++;
     }
 
-    if (m.flags != 0x02)
+    if (m.variableHeader != 0)
     {
-        printf("Byte 5: Expected flags to be 0x02 but was %X\n", m.flags);
+        printf("Byte 5: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Byte 5: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != 0)
+    {
+        printf("Byte 5: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Byte 5: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Byte 5: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Byte 5: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -682,33 +1102,75 @@ void itShouldMoveTheBytesOfANewMessageToTheBeginningCallback(struct MqttMessage 
             failedAssertions++;
         }
         
-        if (m->remainingSize != 2)
-        {
-            printf("Callback: Expected remainingSize to be 2 but was %i\n", m->remainingSize);
-            failedAssertions++;
-        }
-
         if (m->controlPacketType != 0x30)
         {
             printf("Callback: Expected controlPacketType to be 0x30 but was 0x%X\n", m->controlPacketType);
             failedAssertions++;
         }
 
-        if (m->flags != 0x05)
+        if (m->flags != 0x00)
         {
-            printf("Callback: Expected flags to be 0x05 but was 0x%X\n", m->flags);
+            printf("Callback: Expected flags to be 0x00 but was 0x%X\n", m->flags);
+            failedAssertions++;
+        }
+
+        if (m->remainingSize != 2)
+        {
+            printf("Callback: Expected remainingSize to be 2 but was %i\n", m->remainingSize);
+            failedAssertions++;
+        }
+
+        if (m->variableHeaderSize != 0)
+        {
+            printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m->variableHeaderSize);
+            failedAssertions++;
+        }
+
+        if (m->variableHeader != 0)
+        {
+            printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m->variableHeader));
+            failedAssertions++;
+        }
+
+        if (m->payloadSize != 0)
+        {
+            printf("Callback: Expected payloadSize to be 0 but was %i\n", m->payloadSize);
+            failedAssertions++;
+        }
+
+        if (m->payload != 0)
+        {
+            printf("Callback: Expected payload to be 0x%X but was 0x%X\n", 0, *(m->payload));
+            failedAssertions++;
+        }
+
+        if (m->packetIdentifier != 0x00)
+        {
+            printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m->packetIdentifier);
+            failedAssertions++;
+        }
+
+        if (m->publishTopicNameSize != 0)
+        {
+            printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m->publishTopicNameSize);
+            failedAssertions++;
+        }
+
+        if (m->publishTopicName != 0)
+        {
+            printf("Callback: Expected publishTopicName to be 0\n");
             failedAssertions++;
         }
     }
 }
 
-static int8_t itShouldMoveTheBytesOfANewMessageToTheBeginning()
+static uint16_t itShouldMoveTheBytesOfANewMessageToTheBeginning()
 {
     printf("It should move the bytes of a new message to the beginning\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[10] = { 0x62, 0x01, 0xAA, 0x35, 0x02, 0xBB, 0xBB };
+    uint8_t bytes[10] = { 0x30, 0x01, 0xAA, 0x30, 0x02, 0xBB, 0xBB };
     struct MqttMessage m =
     {
         .bytes = bytes,
@@ -720,7 +1182,7 @@ static int8_t itShouldMoveTheBytesOfANewMessageToTheBeginning()
 
     if (callbackCounter != 2)
     {
-        printf("Expected callbackCalled to be 2 but was %i\n", callbackCounter);
+        printf("Expected callbackCounter to be 2 but was %i\n", callbackCounter);
         failedAssertions++;
     }
     
@@ -733,6 +1195,142 @@ static int8_t itShouldMoveTheBytesOfANewMessageToTheBeginning()
     if (messageSize != 0)
     {
         printf("Expected messageSize to be 0 but was %i\n", messageSize);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldDecodeConnect()
+{
+    printf("It should decode connect\n");
+    failedAssertions = 0;
+    callbackCounter = 0;
+
+    uint8_t clientIdentifier[] = "C";
+    uint8_t willTopic[] = "TO";
+    uint8_t willMessage[] = "MES";
+    uint8_t userName[] = "USER";
+    uint8_t password[] = "PASSW";
+
+    struct MqttConnectParameter parameter = {
+        .clientIdentifier = clientIdentifier,
+        .clientIdentifierSize = 1,
+        .cleanSession = 1,
+        .willTopic = willTopic,
+        .willTopicSize = 2,
+        .willMessage = willMessage,
+        .willMessageSize = 3,
+        .willQos = MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_EXACTLY_ONCE,
+        .willRetain = 1,
+        .userName = userName,
+        .userNameSize = 4,
+        .password = password,
+        .passwordSize = 5,
+        .keepAlive = 0xAABB
+    };
+
+    uint8_t bytes[37];
+    uint32_t size = encodeMqttConnect(&parameter, bytes);
+
+    struct MqttMessage m =
+    {
+        .bytes = bytes,
+        .size = 0
+    };
+
+    callbackCounter = 0;
+    currentSize = 36;
+    uint32_t messageSize = decodeMqttChunk(&m, &currentSize, (int32_t) 36, itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunksCallback);
+
+    if (callbackCounter != 0)
+    {
+        printf("Expected callbackCounter to be 0 but was %i\n", callbackCounter);
+        failedAssertions++;
+    }
+
+    if (currentSize != 5)
+    {
+        printf("Expected currentSize to be 5 but was %i\n", currentSize);
+        failedAssertions++;
+    }
+
+    if (messageSize != 8438022)
+    {
+        printf("Expected messageSize to be 8438022 but was %i\n", messageSize);
+        failedAssertions++;
+    }
+
+    if (m.size != 5)
+    {
+        printf("Expected size to be 5 but was %i\n", m.size);
+        failedAssertions++;
+    }
+
+    if (m.fixedHeaderSize != 5)
+    {
+        printf("Expected fixedHeaderSize to be 5 but was %i\n", m.fixedHeaderSize);
+        failedAssertions++;
+    }
+    
+    if (m.controlPacketType != 0x30)
+    {
+        printf("Expected controlPacketType to be 0x30 but was 0x%X\n", m.controlPacketType);
+        failedAssertions++;
+    }
+
+    if (m.flags != 0x00)
+    {
+        printf("Expected flags to be 0x00 but was 0x%X\n", m.flags);
+        failedAssertions++;
+    }
+
+    if (m.remainingSize != 8438017)
+    {
+        printf("Expected remainingSize to be 8438017 but was %i\n", m.remainingSize);
+        failedAssertions++;
+    }
+
+    if (m.variableHeaderSize != 0)
+    {
+        printf("Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
+        failedAssertions++;
+    }
+
+    if (m.variableHeader != 0)
+    {
+        printf("Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
+        failedAssertions++;
+    }
+
+    if (m.payloadSize != 0)
+    {
+        printf("Expected payloadSize to be 0 but was %i\n", m.payloadSize);
+        failedAssertions++;
+    }
+
+    if (m.payload != 0)
+    {
+        printf("Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
+        failedAssertions++;
+    }
+
+    if (m.packetIdentifier != 0x00)
+    {
+        printf("Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicNameSize != 0)
+    {
+        printf("Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
+        failedAssertions++;
+    }
+
+    if (m.publishTopicName != 0)
+    {
+        printf("Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 

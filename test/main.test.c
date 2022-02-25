@@ -7,6 +7,14 @@ int main()
     int16_t failedAssertions = 0;
 
     printf("\n");
+    printf("encodeMqttConnect\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodeConnect();
+    failedAssertions += itShouldEncodeConnectWithClientIdentifierSizeOf0();
+
+    printf("\n");
     printf("decodeMqttChunk\n");
     printf("---------------\n");
     printf("\n");

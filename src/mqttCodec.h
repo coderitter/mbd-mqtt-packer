@@ -78,7 +78,7 @@
 
 #define MQTT_CONTROL_PACKET_TYPE_RESERVED2 0xF0
 
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_RESERVED 0x00;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_RESERVED 0x00
 
 /**
  * @brief This bit specifies the handling of the Session state. The Client and Server can store Session state to enable reliable messaging to continue across a sequence of Network Connections. This bit is used to control the lifetime of the Session state.
@@ -92,7 +92,7 @@
  * [MQTT-3.1.2-6] If CleanSession is set to 1, the Client and Server MUST discard any previous Session and start a new one. This Session lasts as long as the Network Connection. State data associated with this Session MUST NOT be reused in any subsequent Session.
  * [MQTT-3.1.2.7] Retained messages do not form part of the Session state in the Server, they MUST NOT be deleted when the Session ends.
  */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_CLEAN_SESSION 0x01;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_CLEAN_SESSION 0x02
 
 /**
  * @brief 
@@ -111,7 +111,7 @@
  * [MQTT-3.1.2-11] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload.
  * [MQTT-3.1.2-12] If the Will Flag is set to 0, a Will Message MUST NOT be published when this Network Connection ends.
  */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_FLAG 0x02;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_FLAG 0x04
 
 /**
  * @brief These two bits specify the QoS level to be used when publishing the Will Message.
@@ -119,11 +119,11 @@
  * [MQTT-3.1.2-13] If the Will Flag is set to 0, then the Will QoS MUST be set to 0 (0x00).
  * [MQTT-3.1.2-14] If the Will Flag is set to 1, the value of Will QoS can be 0 (0x00), 1 (0x01), or 2 (0x02). It MUST NOT be 3 (0x03).
  */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS 0x0C;
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_MOST_ONCE 0x00;
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_LEAST_ONCE 0x04;
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_EXACTLY_ONCE 0x08;
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_RESERVED 0x0C;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS 0x18
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_MOST_ONCE 0x00
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_LEAST_ONCE 0x08
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_EXACTLY_ONCE 0x10
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_RESERVED 0x18
 
 /**
  * @brief This bit specifies if the Will Message is to be Retained when it is published.
@@ -132,7 +132,7 @@
  * [MQTT-3.1.2-16] If the Will Flag is set to 1 and if Will Retain is set to 0, the Server MUST publish the Will Message as a non-retained message.
  * [MQTT-3.1.2-17] If the Will Flag is set to 1 and if Will Retain is set to 1, the Server MUST publish the Will Message as a retained message.
  */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_RETAIN 0x20;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_RETAIN 0x20
 
 /**
  * @brief 
@@ -141,7 +141,7 @@
  * [MQTT-3.1.2-21] If the Password Flag is set to 1, a password MUST be present in the payload.
  * [MQTT-3.1.2-22] If the User Name Flag is set to 0, the Password Flag MUST be set to 0.
  */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_PASSWORD 0x30;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_PASSWORD 0x40
 
 /**
  * @brief 
@@ -149,7 +149,7 @@
  * [MQTT-3.1.2-18] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload.
  * [MQTT-3.1.2-19] If the User Name Flag is set to 1, a user name MUST be present in the payload.
  */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_USERNAME 0x40;
+#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_USERNAME 0x80
 
 #define MQTT_CONNACK_VARIABLE_HEADER_FLAGS_SESSION_PRESENT 0x01
 
@@ -337,7 +337,7 @@ struct MqttConnectParameter
     /**
      * @brief The size of the Client Identifier
      */
-    uint8_t clientIdentifierSize;
+    uint16_t clientIdentifierSize;
 
     /**
      * @brief The Client and Server can store Session state to enable reliable messaging to continue across a sequence of Network Connections. This bit is used to control the lifetime of the Session state.

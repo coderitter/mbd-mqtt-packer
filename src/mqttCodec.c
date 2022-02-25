@@ -18,12 +18,12 @@ int32_t decodeMqttChunk
         if (mqttMessage->size == 0)
         {
             mqttMessage->fixedHeaderSize = 0;
-            mqttMessage->remainingSize = 0;
-            mqttMessage->variableHeaderSize = 0;
-            mqttMessage->payloadSize = 0;
             mqttMessage->controlPacketType = 0;
             mqttMessage->flags = 0;
+            mqttMessage->remainingSize = 0;
+            mqttMessage->variableHeaderSize = 0;
             mqttMessage->variableHeader = 0;
+            mqttMessage->payloadSize = 0;
             mqttMessage->payload = 0;
             mqttMessage->packetIdentifier = 0;
             mqttMessage->publishTopicName = 0;
@@ -468,10 +468,10 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
     uint32_t remainingLength = 0;
 
     // Variable header size: Protocol name + protocol level + connect flags + keep alive
-    remainingLength += 11;
+    remainingLength += 10;
 
     // Client identifier
-    remainingLength += parameter->clientIdentifierSize ? 2 + parameter->clientIdentifierSize : 0;
+    remainingLength += parameter->clientIdentifierSize ? 2 + parameter->clientIdentifierSize : 2;
 
     // Will topic
     remainingLength += parameter->willTopicSize ? 2 + parameter->willTopicSize : 0;
@@ -561,8 +561,10 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
     /**
      * Variable header - Keep alive
      */
-    memcpy(&(bytes[size]), (uint8_t*) (&parameter->keepAlive), 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->keepAlive >> 8);
+    size++;
+    bytes[size] = (uint8_t) (parameter->keepAlive);
+    size++;
 
     /**
      * Payload - Client identifier
@@ -579,16 +581,16 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
      * [MQTT-3.1.3-9] If the Server rejects the ClientId it MUST respond to the CONNECT Packet with a CONNACK return code 0x02 (Identifier rejected) and then close the Network Connection.
      */
 
+    // String length MSB
+    bytes[size] = (uint8_t) (parameter->clientIdentifierSize >> 8);
+    size++;
+
+    // String length LSB
+    bytes[size] = (uint8_t) parameter->clientIdentifierSize;
+    size++;
+
     if (parameter->clientIdentifierSize > 0)
     {
-        // String length MSB
-        bytes[size] = 0;
-        size++;
-
-        // String length LSB
-        bytes[size] = parameter->clientIdentifierSize;
-        size++;
-
         // UTF-8 string
         memcpy(&(bytes[size]), parameter->clientIdentifier, parameter->clientIdentifierSize);
         size += parameter->clientIdentifierSize;
@@ -605,8 +607,10 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
     if (parameter->willTopicSize > 0)
     {
         // String length MSB + LSB
-        memcpy(&(bytes[size]), (uint8_t*) &(parameter->willTopicSize), 2);
-        size += 2;
+        bytes[size] = (uint8_t) (parameter->willTopicSize >> 8);
+        size++;
+        bytes[size] = (uint8_t) parameter->willTopicSize;
+        size++;
 
         // UTF-8 string
         memcpy(&(bytes[size]), parameter->willTopic, parameter->willTopicSize);
@@ -627,8 +631,10 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
     if (parameter->willMessageSize > 0)
     {
         // String length MSB + LSB
-        memcpy(&(bytes[size]), (uint8_t*) &(parameter->willMessageSize), 2);
-        size += 2;
+        bytes[size] = (uint8_t) (parameter->willMessageSize >> 8);
+        size++;
+        bytes[size] = (uint8_t) parameter->willMessageSize;
+        size++;
 
         // UTF-8 string
         memcpy(&(bytes[size]), parameter->willMessage, parameter->willMessageSize);
@@ -647,8 +653,10 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
     if (parameter->userNameSize > 0)
     {
         // String length MSB + LSB
-        memcpy(&(bytes[size]), (uint8_t*) &(parameter->userNameSize), 2);
-        size += 2;
+        bytes[size] = (uint8_t) (parameter->userNameSize >> 8);
+        size++;
+        bytes[size] = (uint8_t) parameter->userNameSize;
+        size++;
 
         // UTF-8 string
         memcpy(&(bytes[size]), parameter->userName, parameter->userNameSize);
@@ -665,8 +673,10 @@ uint32_t encodeMqttConnect(struct MqttConnectParameter *parameter, uint8_t *byte
     if (parameter->passwordSize > 0)
     {
         // String length MSB + LSB
-        memcpy(&(bytes[size]), (uint8_t*) &(parameter->passwordSize), 2);
-        size += 2;
+        bytes[size] = (uint8_t) (parameter->passwordSize >> 8);
+        size++;
+        bytes[size] = (uint8_t) parameter->passwordSize;
+        size++;
 
         // UTF-8 string
         memcpy(&(bytes[size]), parameter->password, parameter->passwordSize);
