@@ -513,8 +513,10 @@ int32_t decodeMqttChunk
     void (*onMqttMessageDecoded) (struct MqttMessage *mqttMessage)
 );
 
-void decodeMqttPacketIdentifier(uint16_t *packetIdentifier);
-void decodeMqttConnectTopicName(uint8_t *bytes, uint8_t *topicName, uint16_t *topicNameSize);
+void decodeMqttPacketIdentifier(uint8_t *bytes, uint16_t *packetIdentifier);
+void decodeMqttPublishTopicName(uint8_t *bytes, uint8_t *topicName, uint16_t *topicNameSize);
+void decodeMqttPublishPacketIdentifier(uint8_t *bytes, uint8_t *packetIdentifier);
+void decodeMqttPublishPayload(uint8_t *bytes, uint8_t *payload, uint16_t *payloadSize);
 
 uint8_t getMqttRemainingLengthSize(uint32_t remainingLength);
 uint32_t getMqttConnectSize(struct MqttConnectParameter *parameter);
