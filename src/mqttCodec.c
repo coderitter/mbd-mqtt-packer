@@ -712,8 +712,10 @@ uint32_t encodeMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes)
      * 
      * This contains the Packet Identifier from the PUBLISH Packet that is being acknowledged.
      */
-    memcpy(&(bytes[size]), (uint8_t*) &packetIdentifier, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    size++;
+    bytes[size] = (uint8_t) packetIdentifier;
+    size++;
 
     return size;
 }
