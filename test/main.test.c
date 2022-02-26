@@ -29,6 +29,13 @@ int main()
     failedAssertions += itShouldEncodePubAck();
 
     printf("\n");
+    printf("encodeMqttPubRec\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodePubRec();
+
+    printf("\n");
     printf("decodeMqttChunk\n");
     printf("---------------\n");
     printf("\n");
