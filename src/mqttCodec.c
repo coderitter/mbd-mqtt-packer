@@ -890,7 +890,7 @@ uint32_t encodeMqttUnsubscribe(struct MqttUnSubscribeParameter *parameter, uint8
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_UNSUBSCRIBE & 0x02;
+    bytes[0] = MQTT_CONTROL_PACKET_TYPE_UNSUBSCRIBE | 0x02;
     size++;
 
     /**
@@ -900,16 +900,18 @@ uint32_t encodeMqttUnsubscribe(struct MqttUnSubscribeParameter *parameter, uint8
     // Variable header length
     uint32_t remainingLength = 2;
 
-    // Topic filter + QoS length
-    remainingLength += 2 + parameter->topicFilterSize + 1;
+    // Topic filter
+    remainingLength += 2 + parameter->topicFilterSize;
 
     size += encodeMqttRemainingLength(remainingLength, &(bytes[size]));
 
     /**
      * Variable header - Packet Identifier
      */
-    memcpy(&(bytes[size]), (uint8_t*) &parameter->packetIdentifier, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->packetIdentifier >> 8);
+    size++;
+    bytes[size] = (uint8_t) parameter->packetIdentifier;
+    size++;
 
     /**
      * Payload
@@ -927,8 +929,10 @@ uint32_t encodeMqttUnsubscribe(struct MqttUnSubscribeParameter *parameter, uint8
      */
 
     // String length MSB + LSB
-    memcpy(&(bytes[size]), (uint8_t*) &parameter->topicFilterSize, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->topicFilterSize >> 8);
+    size++;
+    bytes[size] = (uint8_t) parameter->topicFilterSize;
+    size++;
     
     // Topic filter
     memcpy(&(bytes[size]), parameter->topicFilter, parameter->topicFilterSize);
