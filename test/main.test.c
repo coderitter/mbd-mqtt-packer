@@ -26,6 +26,7 @@ int main()
     failedAssertions += itShouldDecodeAMessageWithA5ByteHeader();
     failedAssertions += itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks();
     failedAssertions += itShouldMoveTheBytesOfANewMessageToTheBeginning();
+    failedAssertions += itShouldDecodeConnect();
 
     printf("\n");
     printf("Total failed assertions: %i\n", failedAssertions);
