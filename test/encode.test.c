@@ -2,6 +2,216 @@
 #include <stdint.h>
 #include "../src/mqttCodec.h"
 
+static uint16_t itShouldEncodeTheRemainingLengthWith1Byte()
+{
+    printf("It should encode the remaining length with 1 byte\n");
+
+    uint8_t bytes[2];
+    uint32_t size = encodeMqttRemainingLength(127, bytes);
+    uint16_t failedAssertions = 0;
+
+    if (size != 1)
+    {
+        printf("Expected size to be 1 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0x7F)
+    {
+        printf("Expected byte[0] to be 0x7F but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldEncodeTheRemainingLengthWith2Bytes()
+{
+    printf("It should encode the remaining length with 2 bytes\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t bytes[3];
+    uint32_t size = encodeMqttRemainingLength(128, bytes);
+
+    if (size != 2)
+    {
+        printf("Remaining length 128: Expected size to be 2 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0x80)
+    {
+        printf("Remaining length 128: Expected byte[0] to be 0x80 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    if (bytes[1] != 0x01)
+    {
+        printf("Remaining length 128: Expected byte[1] to be 0x01 but was 0x%X\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    size = encodeMqttRemainingLength(16383, bytes);
+
+    if (size != 2)
+    {
+        printf("Remaining length 16383: Expected size to be 2 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0xFF)
+    {
+        printf("Remaining length 16383: Expected byte[0] to be 0xFF but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    if (bytes[1] != 0x7F)
+    {
+        printf("Remaining length 16383: Expected byte[1] to be 0x7F but was 0x%X\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldEncodeTheRemainingLengthWith3Bytes()
+{
+    printf("It should encode the remaining length with 3 bytes\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t bytes[4];
+    uint32_t size = encodeMqttRemainingLength(16384, bytes);
+
+    if (size != 3)
+    {
+        printf("Remaining length 16384: Expected size to be 3 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0x80)
+    {
+        printf("Remaining length 16384: Expected byte[0] to be 0x80 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    if (bytes[1] != 0x80)
+    {
+        printf("Remaining length 16384: Expected byte[1] to be 0x80 but was 0x%X\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    if (bytes[2] != 0x01)
+    {
+        printf("Remaining length 16384: Expected byte[2] to be 0x01 but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    size = encodeMqttRemainingLength(2097151, bytes);
+
+    if (size != 3)
+    {
+        printf("Remaining length 2097151: Expected size to be 3 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0xFF)
+    {
+        printf("Remaining length 2097151: Expected byte[0] to be 0x80 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    if (bytes[1] != 0xFF)
+    {
+        printf("Remaining length 2097151: Expected byte[1] to be 0xFF but was 0x%X\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    if (bytes[2] != 0x7F)
+    {
+        printf("Remaining length 2097151: Expected byte[2] to be 0x7F but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldEncodeTheRemainingLengthWith4Bytes()
+{
+    printf("It should encode the remaining length with 4 bytes\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t bytes[5];
+    uint32_t size = encodeMqttRemainingLength(2097152, bytes);
+
+    if (size != 4)
+    {
+        printf("Expected size to be 4 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0x80)
+    {
+        printf("Expected byte[0] to be 0x80 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    if (bytes[1] != 0x80)
+    {
+        printf("Expected byte[1] to be 0x80 but was 0x%X\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    if (bytes[2] != 0x80)
+    {
+        printf("Expected byte[2] to be 0x80 but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    if (bytes[3] != 0x01)
+    {
+        printf("Expected byte[3] to be 0x01 but was 0x%X\n", bytes[3]);
+        failedAssertions++;
+    }
+
+    size = encodeMqttRemainingLength(268435455, bytes);
+
+    if (size != 4)
+    {
+        printf("Expected size to be 4 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    if (bytes[0] != 0xFF)
+    {
+        printf("Expected byte[0] to be 0x80 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    if (bytes[1] != 0xFF)
+    {
+        printf("Expected byte[1] to be 0xFF but was 0x%X\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    if (bytes[2] != 0xFF)
+    {
+        printf("Expected byte[2] to be 0xFF but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    if (bytes[3] != 0x7F)
+    {
+        printf("Expected byte[3] to be 0x7F but was 0x%X\n", bytes[3]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
 static uint16_t itShouldEncodeConnect()
 {
     printf("It should encode CONNECT\n");

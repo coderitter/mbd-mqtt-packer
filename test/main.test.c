@@ -89,6 +89,16 @@ int main()
     failedAssertions += itShouldEncodeDisconnect();
 
     printf("\n");
+    printf("encodeMqttRemainingLength\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodeTheRemainingLengthWith1Byte();
+    failedAssertions += itShouldEncodeTheRemainingLengthWith2Bytes();
+    failedAssertions += itShouldEncodeTheRemainingLengthWith3Bytes();
+    failedAssertions += itShouldEncodeTheRemainingLengthWith4Bytes();
+
+    printf("\n");
     printf("encodeMqttConnect\n");
     printf("---------------\n");
     printf("\n");

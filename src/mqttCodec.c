@@ -300,14 +300,14 @@ uint8_t encodeMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes)
 {
     uint8_t size = 0;
 
-    // If the remaining length is smaller than 127^1
-    if (remainingLength <= 0x7F)
+    // If the remaining length is smaller than 128^1
+    if (remainingLength <= 127)
     {
         // Set continuation bit (bit 7) to 0
         bytes[size] = (uint8_t) (remainingLength & 0x7F);
         size++;
     }
-    // If the remaining length is larger than 127^1
+    // If the remaining length is larger than 128^1
     else
     {
         // Set continuation bit (bit 7) to 1
@@ -315,38 +315,38 @@ uint8_t encodeMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes)
         size++;
     } 
 
-    // If the remaining length is smaller than 127^2
-    if (remainingLength > 0x7F && remainingLength <= 0x3FFF)
+    // If the remaining length is smaller than 128^2
+    if (remainingLength >= 128 && remainingLength <= 16383)
     {
         // Set continuation bit to 0
         bytes[size] = (uint8_t) ((remainingLength >> 7) & 0x7F);
         size++;
     }
-    // If the remaining length is larger than 127^1
-    else if (remainingLength > 0x7F)
+    // If the remaining length is larger than 128^1
+    else if (remainingLength >= 128)
     {
         // Set continuation bit to 1
         bytes[size] = (uint8_t) ((((remainingLength >> 7) & 0x7F) | 0x80));
         size++;
     }
 
-    // If the remaining length is smaller than 127^3
-    if (remainingLength > 0x3FFF && remainingLength <= 0x1FFFF)
+    // If the remaining length is smaller than 128^3
+    if (remainingLength >= 16384 && remainingLength <= 2097151)
     {
         // Set continuation bit to 0
         bytes[size] = (uint8_t) ((remainingLength >> 14) & 0x7F);
         size++;
     }
-    // If the remaining length is larger than 127^2
-    else if (remainingLength > 0x3FFF)
+    // If the remaining length is larger than 128^2
+    else if (remainingLength >= 16384)
     {
         // Set continuation bit to 1
         bytes[size] = (uint8_t) ((((remainingLength >> 14) & 0x7F) | 0x80));
         size++;
     }
 
-    // If the remaining length is larger than 127^3
-    if (remainingLength > 0x1FFFF)
+    // If the remaining length is larger than 128^3
+    if (remainingLength >= 2097152)
     {
         // Set continuation bit to 0
         bytes[size] = (uint8_t) ((remainingLength >> 21) & 0x7F);
