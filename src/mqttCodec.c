@@ -21,13 +21,6 @@ int32_t decodeMqttChunk
             mqttMessage->controlPacketType = 0;
             mqttMessage->flags = 0;
             mqttMessage->remainingSize = 0;
-            mqttMessage->variableHeaderSize = 0;
-            mqttMessage->variableHeader = 0;
-            mqttMessage->payloadSize = 0;
-            mqttMessage->payload = 0;
-            mqttMessage->packetIdentifier = 0;
-            mqttMessage->publishTopicName = 0;
-            mqttMessage->publishTopicNameSize = 0;
         } 
 
         // Read the first of two bytes of the fixed header which is always present
@@ -36,30 +29,6 @@ int32_t decodeMqttChunk
             mqttMessage->fixedHeaderSize = 2;
             mqttMessage->controlPacketType = mqttMessage->bytes[0] & MQTT_CONTROL_PACKET_TYPE;
             mqttMessage->flags = mqttMessage->bytes[0] & 0xF;
-
-            if
-            (
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_CONNACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBREC ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBREL ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBCOMP ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_UNSUBACK
-            )
-            {
-                mqttMessage->variableHeaderSize = 2;
-            }
-
-            if
-            (
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBACK
-            )
-            {
-                mqttMessage->payloadSize = 1;
-            }
         }
 
         // Read the second of two bytes of the fixed header which is always present and
@@ -108,73 +77,6 @@ int32_t decodeMqttChunk
             }
         }
 
-        // As soon as the first byte of the variable header is existing, set the pointer to it
-        if (mqttMessage->size <= mqttMessage->fixedHeaderSize && (*currentSize) > mqttMessage->fixedHeaderSize)
-        {
-            mqttMessage->variableHeader = &(mqttMessage->bytes[mqttMessage->fixedHeaderSize]);
-        }
-
-        // As soon as the first byte of the payload is existing, set the pointer to it
-        if
-        (
-            mqttMessage->size <= mqttMessage->fixedHeaderSize + mqttMessage->variableHeaderSize && 
-            (*currentSize) > mqttMessage->fixedHeaderSize + mqttMessage->variableHeaderSize
-        )
-        {
-            mqttMessage->payload = &(mqttMessage->bytes[mqttMessage->fixedHeaderSize + mqttMessage->variableHeaderSize]);
-        }
-
-        // As soon as the variable header containing the packet identifier is there, set it
-        if
-        (
-            mqttMessage->size <= 3 && (*currentSize) > 3 &&
-            (
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBREC ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBCOMP ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
-                mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_UNSUBACK
-
-            )
-        )
-        {
-            mqttMessage->packetIdentifier = (mqttMessage->bytes[2] << 8) + mqttMessage->bytes[3];
-        }
-
-        // As soon as the variable header containing the PUBLISH topic name size, set it
-        if
-        (
-            mqttMessage->size <= mqttMessage->fixedHeaderSize + 1 &&
-            (*currentSize) > mqttMessage->fixedHeaderSize + 1 &&
-            mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH
-        )
-        {
-            mqttMessage->publishTopicNameSize = (mqttMessage->bytes[2] << 8) + mqttMessage->bytes[3];
-        }
-
-        // As soon as the variable header containing the PUBLISH topic name, set the pointer to it
-        if
-        (
-            mqttMessage->size <= mqttMessage->fixedHeaderSize + 2 &&
-            (*currentSize) > mqttMessage->fixedHeaderSize + 2 &&
-            mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH
-        )
-        {
-            mqttMessage->publishTopicName = &(mqttMessage->bytes[mqttMessage->fixedHeaderSize + 2]);
-        }
-
-        // As soon as the variable header containing the PUBLISH packet identifier, set it
-        if
-        (
-            mqttMessage->size <= mqttMessage->fixedHeaderSize + 2 + mqttMessage->publishTopicNameSize && 
-            (*currentSize) > mqttMessage->fixedHeaderSize + 2 + mqttMessage->publishTopicNameSize && 
-            mqttMessage->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH
-        )
-        {
-            uint32_t packetIdentifierPosition = mqttMessage->fixedHeaderSize + 2 + mqttMessage->publishTopicNameSize;
-            mqttMessage->packetIdentifier = (mqttMessage->bytes[packetIdentifierPosition] << 8) +  mqttMessage->bytes[packetIdentifierPosition + 1];
-        }
-
         // If the current used size the byte array inside the MqttMessage struct is
         // equal or larger than the current MQTT message we are finished parsing the
         // MQTT message.
@@ -220,16 +122,9 @@ int32_t decodeMqttChunk
             // Reset the MQTT message
             mqttMessage->size = 0;
             mqttMessage->fixedHeaderSize = 0;
-            mqttMessage->remainingSize = 0;
-            mqttMessage->variableHeaderSize = 0;
-            mqttMessage->payloadSize = 0;
             mqttMessage->controlPacketType = 0;
             mqttMessage->flags = 0;
-            mqttMessage->variableHeader = 0;
-            mqttMessage->payload = 0;
-            mqttMessage->packetIdentifier = 0;
-            mqttMessage->publishTopicName = 0;
-            mqttMessage->publishTopicNameSize = 0;
+            mqttMessage->remainingSize = 0;
         }
         else
         {

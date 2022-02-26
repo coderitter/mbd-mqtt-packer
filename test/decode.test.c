@@ -45,48 +45,6 @@ void itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback(s
         printf("Callback: Expected remainingSize to be 0 but was %i\n", m->remainingSize);
         failedAssertions++;
     }
-
-    if (m->variableHeaderSize != 0)
-    {
-        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m->variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m->variableHeader != 0)
-    {
-        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m->variableHeader));
-        failedAssertions++;
-    }
-
-    if (m->payloadSize != 0)
-    {
-        printf("Callback: Expected payloadSize to be 0 but was %i\n", m->payloadSize);
-        failedAssertions++;
-    }
-
-    if (m->payload != 0)
-    {
-        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m->bytes[2], *(m->payload));
-        failedAssertions++;
-    }
-
-    if (m->packetIdentifier != 0)
-    {
-        printf("Callback: Expected packetIdentifier to be 0 but was %i\n", m->packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m->publishTopicNameSize != 0)
-    {
-        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m->publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m->publishTopicName != 0)
-    {
-        printf("Callback: Expected publishTopicName to be 0\n");
-        failedAssertions++;
-    }
 }
 
 static uint16_t itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSize()
@@ -164,48 +122,6 @@ void itShouldDecodeAMessageWithA2ByteHeaderCallback(struct MqttMessage *m)
     if (m->remainingSize != 1)
     {
         printf("Callback: Expected remainingSize to be 1 but was %i\n", m->remainingSize);
-        failedAssertions++;
-    }
-
-    if (m->variableHeaderSize != 0)
-    {
-        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m->variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m->variableHeader != 0)
-    {
-        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m->variableHeader));
-        failedAssertions++;
-    }
-
-    if (m->payloadSize != 0)
-    {
-        printf("Callback: Expected payloadSize to be 0 but was %i\n", m->payloadSize);
-        failedAssertions++;
-    }
-
-    if (m->payload != &(m->bytes[2]))
-    {
-        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m->bytes[2], *(m->payload));
-        failedAssertions++;
-    }
-
-    if (m->packetIdentifier != 0x00)
-    {
-        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m->packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m->publishTopicNameSize != 0)
-    {
-        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m->publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m->publishTopicName != 0)
-    {
-        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 }
@@ -317,48 +233,6 @@ static uint16_t itShouldDecodeAMessageWithA3ByteHeader()
         failedAssertions++;
     }
 
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Callback: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != &(m.bytes[3]))
-    {
-        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m.bytes[3], *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Callback: Expected publishTopicName to be 0\n");
-        failedAssertions++;
-    }
-
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
@@ -429,48 +303,6 @@ static uint16_t itShouldDecodeAMessageWithA4ByteHeader()
     if (m.remainingSize != 49409)
     {
         printf("Expected remainingSize to be 49409 but was %i\n", m.remainingSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Callback: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != &(m.bytes[4]))
-    {
-        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m.bytes[4], *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Callback: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -547,48 +379,6 @@ static uint16_t itShouldDecodeAMessageWithA5ByteHeader()
         failedAssertions++;
     }
 
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Callback: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != &(m.bytes[5]))
-    {
-        printf("Callback: Expected payload to be 0x%X but was 0x%X\n", m.bytes[5], *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Callback: Expected publishTopicName to be 0\n");
-        failedAssertions++;
-    }
-
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
@@ -662,48 +452,6 @@ static uint16_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
 
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Byte 1: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Byte 1: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Byte 1: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != 0)
-    {
-        printf("Byte 1: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Byte 1: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Byte 1: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Byte 1: Expected publishTopicName to be 0\n");
-        failedAssertions++;
-    }
-
     callbackCounter = 0;
     currentSize = 2;
     messageSize = decodeMqttChunk(&m, &currentSize, (int32_t) 1, itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunksCallback);
@@ -753,48 +501,6 @@ static uint16_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
     if (m.remainingSize != 1)
     {
         printf("Byte 2: Expected remainingSize to be 1 but was %i\n", m.remainingSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Byte 2: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Byte 2: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Byte 2: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != 0)
-    {
-        printf("Byte 2: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Byte 2: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Byte 2: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Byte 2: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -850,48 +556,6 @@ static uint16_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
 
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Byte 3: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Byte 3: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Byte 3: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != 0)
-    {
-        printf("Byte 3: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Byte 3: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Byte 3: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Byte 3: Expected publishTopicName to be 0\n");
-        failedAssertions++;
-    }
-
     callbackCounter = 0;
     currentSize = 4;
     messageSize = decodeMqttChunk(&m, &currentSize, (int32_t) 1, itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunksCallback);
@@ -941,48 +605,6 @@ static uint16_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
     if (m.flags != 0x00)
     {
         printf("Byte 4: Expected flags to be 0x00 but was 0x%X\n", m.flags);
-        failedAssertions++;
-    }
-
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Byte 4: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Byte 4: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Byte 4: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != 0)
-    {
-        printf("Byte 4: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Byte 4: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Byte 4: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Byte 4: Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 
@@ -1038,48 +660,6 @@ static uint16_t itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
 
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Byte 5: Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Byte 5: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Byte 5: Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != 0)
-    {
-        printf("Byte 5: Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Byte 5: Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Byte 5: Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Byte 5: Expected publishTopicName to be 0\n");
-        failedAssertions++;
-    }
-
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
@@ -1117,48 +697,6 @@ void itShouldMoveTheBytesOfANewMessageToTheBeginningCallback(struct MqttMessage 
         if (m->remainingSize != 2)
         {
             printf("Callback: Expected remainingSize to be 2 but was %i\n", m->remainingSize);
-            failedAssertions++;
-        }
-
-        if (m->variableHeaderSize != 0)
-        {
-            printf("Callback: Expected variableHeaderSize to be 0 but was %i\n", m->variableHeaderSize);
-            failedAssertions++;
-        }
-
-        if (m->variableHeader != 0)
-        {
-            printf("Callback: Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m->variableHeader));
-            failedAssertions++;
-        }
-
-        if (m->payloadSize != 0)
-        {
-            printf("Callback: Expected payloadSize to be 0 but was %i\n", m->payloadSize);
-            failedAssertions++;
-        }
-
-        if (m->payload != 0)
-        {
-            printf("Callback: Expected payload to be 0x%X but was 0x%X\n", 0, *(m->payload));
-            failedAssertions++;
-        }
-
-        if (m->packetIdentifier != 0x00)
-        {
-            printf("Callback: Expected packetIdentifier to be 0x00 but was 0x%X\n", m->packetIdentifier);
-            failedAssertions++;
-        }
-
-        if (m->publishTopicNameSize != 0)
-        {
-            printf("Callback: Expected publishTopicNameSize to be 0 but was %i\n", m->publishTopicNameSize);
-            failedAssertions++;
-        }
-
-        if (m->publishTopicName != 0)
-        {
-            printf("Callback: Expected publishTopicName to be 0\n");
             failedAssertions++;
         }
     }
@@ -1289,48 +827,6 @@ static uint16_t itShouldDecodeConnect()
     if (m.remainingSize != 8438017)
     {
         printf("Expected remainingSize to be 8438017 but was %i\n", m.remainingSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeaderSize != 0)
-    {
-        printf("Expected variableHeaderSize to be 0 but was %i\n", m.variableHeaderSize);
-        failedAssertions++;
-    }
-
-    if (m.variableHeader != 0)
-    {
-        printf("Expected variableHeader to be 0x%X but was 0x%X\n", 0, *(m.variableHeader));
-        failedAssertions++;
-    }
-
-    if (m.payloadSize != 0)
-    {
-        printf("Expected payloadSize to be 0 but was %i\n", m.payloadSize);
-        failedAssertions++;
-    }
-
-    if (m.payload != 0)
-    {
-        printf("Expected payload to be 0x%X but was 0x%X\n", 0, *(m.payload));
-        failedAssertions++;
-    }
-
-    if (m.packetIdentifier != 0x00)
-    {
-        printf("Expected packetIdentifier to be 0x00 but was 0x%X\n", m.packetIdentifier);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicNameSize != 0)
-    {
-        printf("Expected publishTopicNameSize to be 0 but was %i\n", m.publishTopicNameSize);
-        failedAssertions++;
-    }
-
-    if (m.publishTopicName != 0)
-    {
-        printf("Expected publishTopicName to be 0\n");
         failedAssertions++;
     }
 

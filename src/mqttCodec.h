@@ -271,51 +271,6 @@ struct MqttMessage
      * @brief The remaining size which contains the size of the variable header and the payload.
      */
     uint32_t remainingSize;
-
-    /**
-     * @brief The size of the variable header.
-     */
-    uint32_t variableHeaderSize;
-
-    /**
-     * @brief The pointer to the first byte of the variable header.
-     */
-    uint8_t *variableHeader;
-
-    /**
-     * @brief The size of the payload.
-     */
-    uint32_t payloadSize;
-
-    /**
-     * @brief The pointer to the first byte of the payload.
-     */
-    uint8_t *payload;
-
-    /**
-     * @brief The variable header component of many of the Control Packet types includes a 2 byte Packet Identifier field. These Control Packets are PUBLISH (where QoS > 0), PUBACK, PUBREC, PUBREL, PUBCOMP, SUBSCRIBE, SUBACK, UNSUBSCRIBE, UNSUBACK.
-     * 
-     * The Packet Identifier field is only present in PUBLISH Packets where the QoS level is 1 or 2. Section 2.3.1 provides more information about Packet Identifiers.
-     * 
-     * [MQTT-2.3.1-1] SUBSCRIBE, UNSUBSCRIBE, and PUBLISH (in cases where QoS > 0) Control Packets MUST contain a non-zero 16-bit Packet Identifier.
-     * [MQTT-2.3.1-2] Each time a Client sends a new packet of one of these types it MUST assign it a currently unused Packet Identifier. 
-     * [MQTT-2.3.1-3] If a Client re-sends a particular Control Packet, then it MUST use the same Packet Identifier in subsequent re-sends of that packet. The Packet Identifier becomes available for reuse after the Client has processed the corresponding acknowledgement packet. In the case of a QoS 1 PUBLISH this is the corresponding PUBACK; in the case of QoS 2 it is PUBCOMP. For SUBSCRIBE or UNSUBSCRIBE it is the corresponding SUBACK or UNSUBACK.
-     * [MQTT-2.3.1-4] The same conditions apply to a Server when it sends a PUBLISH with QoS > 0.
-     * [MQTT-2.3.1-5] A PUBLISH Packet MUST NOT contain a Packet Identifier if its QoS value is set to 0.
-     * [MQTT-2.3.1-7] A PUBACK, PUBREC or PUBREL Packet MUST contain the same Packet Identifier as the PUBLISH Packet that was originally sent [MQTT-2.3.1-6]. Similarly SUBACK and UNSUBACK MUST contain the Packet Identifier that was used in the corresponding SUBSCRIBE and UNSUBSCRIBE Packet respectively.
-     * [MQTT-3.8.4-2] The SUBACK Packet MUST have the same Packet Identifier as the SUBSCRIBE Packet that it is acknowledging.
-     */
-    uint16_t packetIdentifier;
-    
-    /**
-     * @brief If the Control Packet type is PUBLISH, this field the size of the topic name.
-     */
-    uint16_t publishTopicNameSize;
-
-    /**
-     * @brief If the Control Packet type is PUBLISH, this field points to the first byte of the topic name.
-     */
-    uint8_t *publishTopicName;
 };
 
 struct MqttConnectParameter
@@ -557,6 +512,9 @@ int32_t decodeMqttChunk
     int32_t chunkSize,
     void (*onMqttMessageDecoded) (struct MqttMessage *mqttMessage)
 );
+
+void decodeMqttPacketIdentifier(uint16_t *packetIdentifier);
+void decodeMqttConnectTopicName(uint8_t *bytes, uint8_t *topicName, uint16_t *topicNameSize);
 
 uint8_t getMqttRemainingLengthSize(uint32_t remainingLength);
 uint32_t getMqttConnectSize(struct MqttConnectParameter *parameter);
