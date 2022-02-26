@@ -57,11 +57,18 @@ int main()
     failedAssertions += itShouldEncodeSubscribe();
 
     printf("\n");
-    printf("decodeMqttUnsubscribe\n");
+    printf("encodeMqttUnsubscribe\n");
     printf("---------------\n");
     printf("\n");
 
     failedAssertions += itShouldEncodeUnsubscribe();
+
+    printf("\n");
+    printf("encodePingReq\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodePingReq();
 
     printf("\n");
     printf("decodeMqttChunk\n");
