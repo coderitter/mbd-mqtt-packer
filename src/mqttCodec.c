@@ -183,10 +183,10 @@ uint8_t getMqttRemainingLengthSize(uint32_t remainingLength)
 uint32_t getMqttConnectSize(struct MqttConnectParameter *parameter)
 {
     // Variable header size: Protocol name + protocol level + connect flags + keep alive
-    uint32_t size = 11;
+    uint32_t size = 10;
 
     // Client identifier
-    size += parameter->clientIdentifierSize ? 2 + parameter->clientIdentifierSize : 0;
+    size += parameter->clientIdentifierSize ? 2 + parameter->clientIdentifierSize : 2;
 
     // Will topic
     size += parameter->willTopicSize ? 2 + parameter->willTopicSize : 0;

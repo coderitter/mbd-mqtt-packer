@@ -1,10 +1,82 @@
 #include <stdio.h>
 #include "decode.test.c"
 #include "encode.test.c"
+#include "getSize.test.c"
 
 int main()
 {
     int16_t failedAssertions = 0;
+
+    printf("\n");
+    printf("getMqttConnectSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectConnectSize();
+    failedAssertions += itShouldGetTheCorrectConnectSizeWithClientIdentifierSizeOf0();
+    
+    printf("\n");
+    printf("getMqttPublishSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectPublishSize();
+
+    printf("\n");
+    printf("getMqttPubAckSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectPubAckSize();
+
+    printf("\n");
+    printf("getMqttPubRecSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectPubRecSize();
+
+    printf("\n");
+    printf("getMqttPubRelSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectPubRelSize();
+
+    printf("\n");
+    printf("getMqttPubCompSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectPubCompSize();
+
+    printf("\n");
+    printf("getMqttSubscribeSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectSubscribeSize();
+
+    printf("\n");
+    printf("getMqttUnsubscribeSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectUnsubscribeSize();
+
+    printf("\n");
+    printf("getPingReqSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectPingReqSize();
+
+    printf("\n");
+    printf("getDisconnectSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodeDisconnect();
 
     printf("\n");
     printf("encodeMqttConnect\n");

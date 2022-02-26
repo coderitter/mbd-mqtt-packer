@@ -530,8 +530,8 @@ uint32_t getMqttPubAckSize();
 uint32_t getMqttPubRecSize();
 uint32_t getMqttPubRelSize();
 uint32_t getMqttPubCompSize();
-uint32_t getMqttSuscribeSize(struct MqttUnSubscribeParameter *parameter);
-uint32_t getMqttUnsuscribeSize(struct MqttUnSubscribeParameter *parameter);
+uint32_t getMqttSubscribeSize(struct MqttUnSubscribeParameter *parameter);
+uint32_t getMqttUnsubscribeSize(struct MqttUnSubscribeParameter *parameter);
 uint32_t getMqttPingReqSize();
 uint32_t getMqttDisconnectSize();
 
