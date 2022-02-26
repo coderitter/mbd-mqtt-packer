@@ -808,8 +808,10 @@ uint32_t encodeMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes)
      * 
      * The variable header contains the same Packet Identifier as the PUBREL Packet that is being acknowledged.
      */
-    memcpy(&(bytes[size]), (uint8_t*) &packetIdentifier, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    size++;
+    bytes[size] = (uint8_t) packetIdentifier;
+    size++;
 
     return size;
 }
