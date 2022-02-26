@@ -760,7 +760,7 @@ uint32_t encodeMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBREL & 0x02;
+    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBREL | 0x02;
     size++;
 
     /**
@@ -776,8 +776,10 @@ uint32_t encodeMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes)
      * 
      * The variable header contains the same Packet Identifier as the PUBREC Packet that is being acknowledged.
      */
-    memcpy(&(bytes[size]), (uint8_t*) &packetIdentifier, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    size++;
+    bytes[size] = (uint8_t) packetIdentifier;
+    size++;
 
     return size;
 }

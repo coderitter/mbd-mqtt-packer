@@ -656,3 +656,49 @@ static uint16_t itShouldEncodePubRec()
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
+
+static uint16_t itShouldEncodePubRel()
+{
+    printf("It should encode PUBREL\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t bytes[4];
+    uint32_t size = encodeMqttPubRel(0xAABB, bytes);
+
+    if (size != 4)
+    {
+        printf("Expected size to be 4 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    // Fixed header - Packet type
+    if (bytes[0] != 0x62)
+    {
+        printf("Expected byte[0] to be 0x62 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    // Fixed header - Remaining length
+    if (bytes[1] != 2)
+    {
+        printf("Expected byte[1] to be 2 but was %i\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    // Variable header - Packet identifier - Length MSB
+    if (bytes[2] != 0xAA)
+    {
+        printf("Expected byte[2] to be 0xAA but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    // Variable header - Packet identifier - Length LSB
+    if (bytes[3] != 0xBB)
+    {
+        printf("Expected byte[3] to be 0xBB but was 0x%X\n", bytes[3]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
