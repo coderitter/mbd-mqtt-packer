@@ -71,6 +71,13 @@ int main()
     failedAssertions += itShouldEncodePingReq();
 
     printf("\n");
+    printf("encodeDisconnect\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodeDisconnect();
+
+    printf("\n");
     printf("decodeMqttChunk\n");
     printf("---------------\n");
     printf("\n");

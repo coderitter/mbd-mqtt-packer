@@ -995,3 +995,35 @@ static uint16_t itShouldEncodePingReq()
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
+
+static uint16_t itShouldEncodeDisconnect()
+{
+    printf("It should encode DISCONNECT\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t bytes[2];
+    uint32_t size = encodeMqttDisconnect(bytes);
+
+    if (size != 2)
+    {
+        printf("Expected size to be 2 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    // Fixed header - Packet type
+    if (bytes[0] != 0xE0)
+    {
+        printf("Expected byte[0] to be 0xE0 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    // Fixed header - Remaining length
+    if (bytes[1] != 0)
+    {
+        printf("Expected byte[1] to be 0 but was %i\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
