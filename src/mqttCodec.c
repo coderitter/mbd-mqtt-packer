@@ -636,8 +636,10 @@ uint32_t encodeMqttPublish(struct MqttPublishParameter *parameter, uint8_t *byte
      */
 
     // String length MSB + LSB
-    memcpy(&(bytes[size]), (uint8_t*) &parameter->topicNameSize, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->topicNameSize >> 8);
+    size++;
+    bytes[size] = (uint8_t) parameter->topicNameSize;
+    size++;
     
     // Topic name
     memcpy(&(bytes[size]), parameter->topicName, parameter->topicNameSize);
@@ -646,8 +648,10 @@ uint32_t encodeMqttPublish(struct MqttPublishParameter *parameter, uint8_t *byte
     /**
      * Variable header - Packet Identifier
      */
-    memcpy(&(bytes[size]), (uint8_t*) &parameter->packetIdentifier, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->packetIdentifier >> 8);
+    size++;
+    bytes[size] = (uint8_t) parameter->packetIdentifier;
+    size++;
 
     /**
      * Payload

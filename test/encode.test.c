@@ -4,7 +4,7 @@
 
 static uint16_t itShouldEncodeConnect()
 {
-    printf("It should encode connect\n");
+    printf("It should encode CONNECT\n");
     uint16_t failedAssertions = 0;
 
     uint8_t clientIdentifier[] = "C";
@@ -304,7 +304,7 @@ static uint16_t itShouldEncodeConnect()
 
 static uint16_t itShouldEncodeConnectWithClientIdentifierSizeOf0()
 {
-    printf("It should encode connect with a client identifier size of 0\n");
+    printf("It should encode CONNECT with a client identifier size of 0\n");
     uint16_t failedAssertions = 0;
 
     struct MqttConnectParameter parameter = {
@@ -434,3 +434,134 @@ static uint16_t itShouldEncodeConnectWithClientIdentifierSizeOf0()
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
+
+static uint16_t itShouldEncodePublish()
+{
+    printf("It should encode PUBLISH\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t topicName[] = "TOPIC";
+    uint8_t payload[] = { 0x00, 0x01, 0x02 };
+
+    struct MqttPublishParameter parameter = {
+        .packetIdentifier = 0xAABB,
+        .dup = 1,
+        .qos = MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE,
+        .retain = 1,
+        .topicName = topicName,
+        .topicNameSize = 5,
+        .payload = payload,
+        .payloadSize = 3,
+    };
+
+    uint8_t bytes[14];
+    uint32_t size = encodeMqttPublish(&parameter, bytes);
+
+    if (size != 14)
+    {
+        printf("Expected size to be 14 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    // Fixed header - Packet type
+    if (bytes[0] != 0x3D)
+    {
+        printf("Expected byte[0] to be 0x3D but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    // Fixed header - Remaining length
+    if (bytes[1] != 12)
+    {
+        printf("Expected byte[1] to be 12 but was %i\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - Length MSB
+    if (bytes[2] != 0x00)
+    {
+        printf("Expected byte[2] to be 0x00 but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - Length LSB
+    if (bytes[3] != 0x05)
+    {
+        printf("Expected byte[3] to be 0x05 but was 0x%X\n", bytes[3]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - T
+    if (bytes[4] != 0x54)
+    {
+        printf("Expected byte[4] to be 0x54 but was 0x%X\n", bytes[4]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - O
+    if (bytes[5] != 0x4F)
+    {
+        printf("Expected byte[5] to be 0x4F but was 0x%X\n", bytes[5]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - P
+    if (bytes[6] != 0x50)
+    {
+        printf("Expected byte[6] to be 0x50 but was 0x%X\n", bytes[6]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - I
+    if (bytes[7] != 0x49)
+    {
+        printf("Expected byte[7] to be 0x49 but was 0x%X\n", bytes[7]);
+        failedAssertions++;
+    }
+
+    // Variable header - Topic name - C
+    if (bytes[8] != 0x43)
+    {
+        printf("Expected byte[8] to be 0x43 but was 0x%X\n", bytes[7]);
+        failedAssertions++;
+    }
+
+    // Variable header - Packet identifier MSB
+    if (bytes[9] != 0xAA)
+    {
+        printf("Expected byte[9] to be 0xAA but was 0x%X\n", bytes[8]);
+        failedAssertions++;
+    }
+
+    // Variable header - Packet identifier LSB
+    if (bytes[10] != 0xBB)
+    {
+        printf("Expected byte[10] to be 0xBB but was 0x%X\n", bytes[9]);
+        failedAssertions++;
+    }
+
+    // Payload - Byte 1
+    if (bytes[11] != 0x00)
+    {
+        printf("Expected byte[11] to be 0x00 but was 0x%X\n", bytes[6]);
+        failedAssertions++;
+    }
+
+    // Payload - Byte 2
+    if (bytes[12] != 0x01)
+    {
+        printf("Expected byte[12] to be 0x01 but was 0x%X\n", bytes[7]);
+        failedAssertions++;
+    }
+
+    // Payload - Byte 3
+    if (bytes[13] != 0x02)
+    {
+        printf("Expected byte[13] to be 0x02 but was 0x%X\n", bytes[7]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+

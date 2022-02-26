@@ -15,6 +15,13 @@ int main()
     failedAssertions += itShouldEncodeConnectWithClientIdentifierSizeOf0();
 
     printf("\n");
+    printf("encodeMqttPublish\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodePublish();
+
+    printf("\n");
     printf("decodeMqttChunk\n");
     printf("---------------\n");
     printf("\n");
