@@ -522,42 +522,42 @@ static uint16_t itShouldEncodePublish()
     // Variable header - Topic name - C
     if (bytes[8] != 0x43)
     {
-        printf("Expected byte[8] to be 0x43 but was 0x%X\n", bytes[7]);
+        printf("Expected byte[8] to be 0x43 but was 0x%X\n", bytes[8]);
         failedAssertions++;
     }
 
     // Variable header - Packet identifier MSB
     if (bytes[9] != 0xAA)
     {
-        printf("Expected byte[9] to be 0xAA but was 0x%X\n", bytes[8]);
+        printf("Expected byte[9] to be 0xAA but was 0x%X\n", bytes[9]);
         failedAssertions++;
     }
 
     // Variable header - Packet identifier LSB
     if (bytes[10] != 0xBB)
     {
-        printf("Expected byte[10] to be 0xBB but was 0x%X\n", bytes[9]);
+        printf("Expected byte[10] to be 0xBB but was 0x%X\n", bytes[10]);
         failedAssertions++;
     }
 
     // Payload - Byte 1
     if (bytes[11] != 0x00)
     {
-        printf("Expected byte[11] to be 0x00 but was 0x%X\n", bytes[6]);
+        printf("Expected byte[11] to be 0x00 but was 0x%X\n", bytes[11]);
         failedAssertions++;
     }
 
     // Payload - Byte 2
     if (bytes[12] != 0x01)
     {
-        printf("Expected byte[12] to be 0x01 but was 0x%X\n", bytes[7]);
+        printf("Expected byte[12] to be 0x01 but was 0x%X\n", bytes[12]);
         failedAssertions++;
     }
 
     // Payload - Byte 3
     if (bytes[13] != 0x02)
     {
-        printf("Expected byte[13] to be 0x02 but was 0x%X\n", bytes[7]);
+        printf("Expected byte[13] to be 0x02 but was 0x%X\n", bytes[13]);
         failedAssertions++;
     }
 
@@ -742,6 +742,117 @@ static uint16_t itShouldEncodePubComp()
     if (bytes[3] != 0xBB)
     {
         printf("Expected byte[3] to be 0xBB but was 0x%X\n", bytes[3]);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldEncodeSubscribe()
+{
+    printf("It should encode SUBSCRIBE\n");
+    uint16_t failedAssertions = 0;
+
+    uint8_t topicFilter[] = "TOPIC";
+
+    struct MqttUnSubscribeParameter parameter = {
+        .packetIdentifier = 0xAABB,
+        .topicFilter = topicFilter,
+        .topicFilterSize = 5,
+        .qos = MQTT_SUBSCRIBE_PAYLOAD_QOS_EXACTLY_ONCE
+    };
+
+    uint8_t bytes[12];
+    uint32_t size = encodeMqttSubscribe(&parameter, bytes);
+
+    if (size != 12)
+    {
+        printf("Expected size to be 12 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    // Fixed header - Packet type
+    if (bytes[0] != 0x82)
+    {
+        printf("Expected byte[0] to be 0x82 but was 0x%X\n", bytes[0]);
+        failedAssertions++;
+    }
+
+    // Fixed header - Remaining length
+    if (bytes[1] != 10)
+    {
+        printf("Expected byte[1] to be 12 but was %i\n", bytes[1]);
+        failedAssertions++;
+    }
+
+    // Variable header - Packet identifier - Length MSB
+    if (bytes[2] != 0xAA)
+    {
+        printf("Expected byte[2] to be 0xAA but was 0x%X\n", bytes[2]);
+        failedAssertions++;
+    }
+
+    // Variable header - Packet identifier - Length LSB
+    if (bytes[3] != 0xBB)
+    {
+        printf("Expected byte[3] to be 0xBB but was 0x%X\n", bytes[3]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - Length MSB
+    if (bytes[4] != 0x00)
+    {
+        printf("Expected byte[4] to be 0x00 but was 0x%X\n", bytes[4]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - Length LSB
+    if (bytes[5] != 0x05)
+    {
+        printf("Expected byte[5] to be 0x05 but was 0x%X\n", bytes[5]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - T
+    if (bytes[6] != 0x54)
+    {
+        printf("Expected byte[6] to be 0x54 but was 0x%X\n", bytes[6]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - O
+    if (bytes[7] != 0x4F)
+    {
+        printf("Expected byte[7] to be 0x4F but was 0x%X\n", bytes[7]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - P
+    if (bytes[8] != 0x50)
+    {
+        printf("Expected byte[8] to be 0x50 but was 0x%X\n", bytes[8]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - I
+    if (bytes[9] != 0x49)
+    {
+        printf("Expected byte[9] to be 0x49 but was 0x%X\n", bytes[9]);
+        failedAssertions++;
+    }
+
+    // Payload - Topic filter - C
+    if (bytes[10] != 0x43)
+    {
+        printf("Expected byte[10] to be 0x43 but was 0x%X\n", bytes[10]);
+        failedAssertions++;
+    }
+
+    // Payload - QoS
+    if (bytes[11] != 0x02)
+    {
+        printf("Expected byte[11] to be 0x02 but was 0x%X\n", bytes[11]);
         failedAssertions++;
     }
 

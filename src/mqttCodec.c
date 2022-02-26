@@ -827,7 +827,7 @@ uint32_t encodeMqttSubscribe(struct MqttUnSubscribeParameter *parameter, uint8_t
      * [MQTT-3.8.1-1] Bits 3,2,1 and 0 of the fixed header of the SUBSCRIBE Control Packet are reserved and MUST be set to 0,0,1 and 0 respectively. The Server MUST treat any other value as malformed and close the Network Connection.
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_SUBSCRIBE & 0x02;
+    bytes[0] = MQTT_CONTROL_PACKET_TYPE_SUBSCRIBE | 0x02;
     size++;
 
     /**
@@ -845,8 +845,10 @@ uint32_t encodeMqttSubscribe(struct MqttUnSubscribeParameter *parameter, uint8_t
     /**
      * Variable header - Packet Identifier
      */
-    memcpy(&(bytes[size]), (uint8_t*) &parameter->packetIdentifier, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->packetIdentifier >> 8);
+    size++;
+    bytes[size] = (uint8_t) parameter->packetIdentifier;
+    size++;
 
     /**
      * Payload
@@ -864,8 +866,10 @@ uint32_t encodeMqttSubscribe(struct MqttUnSubscribeParameter *parameter, uint8_t
      */
 
     // String length MSB + LSB
-    memcpy(&(bytes[size]), (uint8_t*) &parameter->topicFilterSize, 2);
-    size += 2;
+    bytes[size] = (uint8_t) (parameter->topicFilterSize >> 8);
+    size++;
+    bytes[size] = (uint8_t) parameter->topicFilterSize;
+    size++;
     
     // Topic filter
     memcpy(&(bytes[size]), parameter->topicFilter, parameter->topicFilterSize);

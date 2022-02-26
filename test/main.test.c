@@ -50,6 +50,13 @@ int main()
     failedAssertions += itShouldEncodePubComp();
 
     printf("\n");
+    printf("encodeMqttSubscribe\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldEncodeSubscribe();
+
+    printf("\n");
     printf("decodeMqttChunk\n");
     printf("---------------\n");
     printf("\n");
