@@ -8,6 +8,16 @@ int main()
     int16_t failedAssertions = 0;
 
     printf("\n");
+    printf("getMqttRemainingLengthSize\n");
+    printf("---------------\n");
+    printf("\n");
+
+    failedAssertions += itShouldGetTheCorrectRemainingLengthSizeForA1ByteLength();
+    failedAssertions += itShouldGetTheCorrectRemainingLengthSizeForA2ByteLength();
+    failedAssertions += itShouldGetTheCorrectRemainingLengthSizeForA3ByteLength();
+    failedAssertions += itShouldGetTheCorrectRemainingLengthSizeForA4ByteLength();
+
+    printf("\n");
     printf("getMqttConnectSize\n");
     printf("---------------\n");
     printf("\n");

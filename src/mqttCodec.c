@@ -162,17 +162,17 @@ void decodeMqttPublishPayload(uint8_t *bytes, uint8_t *payload, uint16_t *payloa
 uint8_t getMqttRemainingLengthSize(uint32_t remainingLength)
 {
     
-    if (remainingLength <= 0x7F)
+    if (remainingLength <= 127)
     {
         return 1;
     }
 
-    if (remainingLength <= 0x3FFF)
+    if (remainingLength <= 16383)
     {
         return 2;
     }
 
-    if (remainingLength <= 0x1FFFF)
+    if (remainingLength <= 2097151)
     {
         return 3;
     }

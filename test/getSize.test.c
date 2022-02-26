@@ -2,6 +2,98 @@
 #include <stdint.h>
 #include "../src/mqttCodec.h"
 
+static uint16_t itShouldGetTheCorrectRemainingLengthSizeForA1ByteLength()
+{
+    printf("It should get the correct remaining length size for a 1 byte length\n");
+    uint16_t failedAssertions = 0;
+
+    uint32_t size = getMqttRemainingLengthSize(0);
+
+    if (size != 1)
+    {
+        printf("Expected size to be 1 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    size = getMqttRemainingLengthSize(127);
+
+    if (size != 1)
+    {
+        printf("Expected size to be 1 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldGetTheCorrectRemainingLengthSizeForA2ByteLength()
+{
+    printf("It should get the correct remaining length size for a 2 byte length\n");
+    uint16_t failedAssertions = 0;
+
+    uint32_t size = getMqttRemainingLengthSize(128);
+
+    if (size != 2)
+    {
+        printf("Remaining length 128: Expected size to be 2 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    size = getMqttRemainingLengthSize(16383);
+
+    if (size != 2)
+    {
+        printf("Remaining length 16383: Expected size to be 2 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldGetTheCorrectRemainingLengthSizeForA3ByteLength()
+{
+    printf("It should get the correct remaining length size for a 3 byte length\n");
+    uint16_t failedAssertions = 0;
+
+    uint32_t size = getMqttRemainingLengthSize(16384);
+
+    if (size != 3)
+    {
+        printf("Remaining length 16384: Expected size to be 3 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    size = getMqttRemainingLengthSize(2097151);
+
+    if (size != 3)
+    {
+        printf("Remaining length 2097151: Expected size to be 3 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+static uint16_t itShouldGetTheCorrectRemainingLengthSizeForA4ByteLength()
+{
+    printf("It should get the correct remaining length size for a 4 byte length\n");
+    uint16_t failedAssertions = 0;
+
+    uint32_t size = getMqttRemainingLengthSize(2097152);
+
+    if (size != 4)
+    {
+        printf("Expected size to be 4 but was %i\n", size);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
 static uint16_t itShouldGetTheCorrectConnectSize()
 {
     printf("It should get the correct CONNECT size\n");
