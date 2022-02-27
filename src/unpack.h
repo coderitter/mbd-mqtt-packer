@@ -13,7 +13,7 @@
  * @param mqttMessage A pointer to a struct holding the information regarding an MQTT packet.
  * @param currentSize The current number of bytes in the MQTT packet.
  * @param chunkSize The size of the last added chunk.
- * @param onMqttMessageDecoded A pointer to a function which is called as soon as an MQTT packet is complete.
+ * @param onMqttPacketComplete A pointer to a function which is called as soon as an MQTT packet is complete.
  * @return int32_t The size of the MQTT packet which is currently decoded.
  */
 int32_t unpackMqttChunk
@@ -21,7 +21,7 @@ int32_t unpackMqttChunk
     struct MqttPacket *mqttMessage, 
     int32_t *currentSize, 
     int32_t chunkSize,
-    void (*onMqttMessageDecoded) (struct MqttPacket *mqttMessage)
+    void (*onMqttPacketComplete) (struct MqttPacket *mqttMessage)
 );
 
 void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdentifier);
