@@ -148,7 +148,7 @@ struct MqttPacket
      *  - MQTT_PACKET_PINGRESP
      *  - MQTT_PACKET_DISCONNECT
      */
-    uint8_t controlPacketTypeAndFlags;
+    uint8_t type;
     
     /**
      * @brief The remaining size which contains the size of the variable header and the payload.

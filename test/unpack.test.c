@@ -28,9 +28,9 @@ void itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback(struct Mq
         failedAssertions++;
     }
     
-    if (m->controlPacketTypeAndFlags != 0x30)
+    if (m->type != 0x30)
     {
-        printf("Callback: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m->controlPacketTypeAndFlags);
+        printf("Callback: Expected type to be 0x30 but was 0x%X\n", m->type);
         failedAssertions++;
     }
         
@@ -97,9 +97,9 @@ void itShouldUnpackWithA2ByteHeaderCallback(struct MqttPacket *m)
         failedAssertions++;
     }
     
-    if (m->controlPacketTypeAndFlags != 0x30)
+    if (m->type != 0x30)
     {
-        printf("Callback: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m->controlPacketTypeAndFlags);
+        printf("Callback: Expected type to be 0x30 but was 0x%X\n", m->type);
         failedAssertions++;
     }
 
@@ -191,9 +191,9 @@ static uint16_t itShouldUnpackWithA3ByteHeader()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -254,9 +254,9 @@ static uint16_t itShouldUnpackWithA4ByteHeader()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -317,9 +317,9 @@ static uint16_t itShouldUnpackWithA5ByteHeader()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -380,9 +380,9 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Byte 1: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Byte 1: Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -426,9 +426,9 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Byte 2: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Byte 2: Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -472,9 +472,9 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Byte 3: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Byte 3: Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -524,9 +524,9 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
 
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Byte 4: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Byte 4: Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -564,9 +564,9 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
         failedAssertions++;
     }
     
-    if (m.controlPacketTypeAndFlags != 0x30)
+    if (m.type != 0x30)
     {
-        printf("Byte 5: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m.controlPacketTypeAndFlags);
+        printf("Byte 5: Expected type to be 0x30 but was 0x%X\n", m.type);
         failedAssertions++;
     }
 
@@ -598,9 +598,9 @@ void itShouldMoveTheBytesOfANewPacketToTheBeginningCallback(struct MqttPacket *m
             failedAssertions++;
         }
         
-        if (m->controlPacketTypeAndFlags != 0x30)
+        if (m->type != 0x30)
         {
-            printf("Callback: Expected controlPacketTypeAndFlags to be 0x30 but was 0x%X\n", m->controlPacketTypeAndFlags);
+            printf("Callback: Expected type to be 0x30 but was 0x%X\n", m->type);
             failedAssertions++;
         }
 
@@ -697,7 +697,7 @@ void itShouldUnpackAPublishPacketCallback(struct MqttPacket *m)
 
     if (publish.qos != MQTT_QOS_EXACTLY_ONCE)
     {
-        printf("Expected dup to be 0x02 but was 0x%X\n", publish.qos);
+        printf("Expected qos to be 0x02 but was 0x%X\n", publish.qos);
         failedAssertions++;
     }
 

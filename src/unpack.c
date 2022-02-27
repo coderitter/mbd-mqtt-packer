@@ -18,7 +18,7 @@ int32_t unpackMqttChunk
         if (packet->size == 0)
         {
             packet->fixedHeaderSize = 0;
-            packet->controlPacketTypeAndFlags = 0;
+            packet->type = 0;
             packet->remainingSize = 0;
         } 
 
@@ -26,7 +26,7 @@ int32_t unpackMqttChunk
         if (packet->size == 0 && (*currentSize) >= 1)
         {
             packet->fixedHeaderSize = 2;
-            packet->controlPacketTypeAndFlags = packet->bytes[0];
+            packet->type = packet->bytes[0] & 0xF0;
         }
 
         // Read the second of two bytes of the fixed header which is always present and
@@ -120,7 +120,7 @@ int32_t unpackMqttChunk
             // Reset the MQTT packet
             packet->size = 0;
             packet->fixedHeaderSize = 0;
-            packet->controlPacketTypeAndFlags = 0;
+            packet->type = 0;
             packet->remainingSize = 0;
         }
         else
@@ -140,11 +140,11 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
 {
     if
     (
-        packet->controlPacketTypeAndFlags == MQTT_PACKET_PUBACK ||
-        packet->controlPacketTypeAndFlags == MQTT_PACKET_PUBREC ||
-        packet->controlPacketTypeAndFlags == MQTT_PACKET_PUBCOMP ||
-        packet->controlPacketTypeAndFlags == MQTT_PACKET_SUBACK ||
-        packet->controlPacketTypeAndFlags == MQTT_PACKET_UNSUBACK
+        packet->type == MQTT_PACKET_PUBACK ||
+        packet->type == MQTT_PACKET_PUBREC ||
+        packet->type == MQTT_PACKET_PUBCOMP ||
+        packet->type == MQTT_PACKET_SUBACK ||
+        packet->type == MQTT_PACKET_UNSUBACK
     )
     {
         (*packetIdentifier) = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
@@ -153,9 +153,9 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
 
 void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket)
 {
-    publishPacket->dup = packet->controlPacketTypeAndFlags & 0x08 ? 1 : 0;
-    publishPacket->qos = (packet->controlPacketTypeAndFlags & 0x06) >> 1;
-    publishPacket->retain = packet->controlPacketTypeAndFlags & 0x01 ? 1 : 0;
+    publishPacket->dup = packet->bytes[0] & 0x08 ? 1 : 0;
+    publishPacket->qos = (packet->bytes[0] & 0x06) >> 1;
+    publishPacket->retain = packet->bytes[0] & 0x01 ? 1 : 0;
 
     publishPacket->topicName = &(packet->bytes[packet->fixedHeaderSize + 2]);
     publishPacket->topicNameSize = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
