@@ -26,7 +26,7 @@ int32_t unpackMqttChunk
         if (packet->size == 0 && (*currentSize) >= 1)
         {
             packet->fixedHeaderSize = 2;
-            packet->type = packet->bytes[0] & 0xF0;
+            packet->type = (packet->bytes[0] & 0xF0) >> 4;
         }
 
         // Read the second of two bytes of the fixed header which is always present and
