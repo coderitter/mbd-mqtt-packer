@@ -29,8 +29,12 @@ void onMqttPacketComplete(struct MqttPacket *packet)
 {
     if (packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
     {
+        struct MqttPublishPacket publish;
+        unpackMqttPublish(packet, publish);
+        
         uint8_t pubAckBytes[getMqttPubAckSize()];
-        packMqttPubAck(packet->packetIdentifier, pubAckBytes);
+        packMqttPubAck(publish.packetIdentifier, pubAckBytes);
+        
         tcpSend(pubAckBytes);
     }
 };

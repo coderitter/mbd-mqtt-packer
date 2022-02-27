@@ -152,35 +152,23 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
     {
         (*packetIdentifier) = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
     }
-    else if (packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
-    {
-        uint8_t *topicName = 0;
-        uint16_t topicNameSize = 0;
-        unpackMqttPublishTopicName(packet, &topicName, &topicNameSize);
-
-        // Fixed header size + topic name size value + topic name size
-        uint16_t packetIdentifierPosition = packet->fixedHeaderSize + 2 + topicNameSize;
-
-        (*packetIdentifier) = (packet->bytes[packetIdentifierPosition] << 8) + packet->bytes[packetIdentifierPosition + 1];
-    }
 }
 
-void unpackMqttPublishTopicName(struct MqttPacket *packet, uint8_t **topicName, uint16_t *topicNameSize)
+void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket)
 {
-    (*topicName) = &(packet->bytes[packet->fixedHeaderSize + 2]);
-    (*topicNameSize) = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
-}
+    publishPacket->dup = packet->flags & MQTT_PUBLISH_FIXED_HEADER_FLAG_DUP ? 1 : 0;
+    publishPacket->qos = packet->flags & MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS;
+    publishPacket->retain = packet->flags & MQTT_PUBLISH_FIXED_HEADER_FLAG_RETAIN ? 1 : 0;
 
-void unpackMqttPublishPayload(struct MqttPacket *packet, uint8_t **payload, uint16_t *payloadSize)
-{
-    uint8_t *topicName = 0;
-    uint16_t topicNameSize = 0;
-    unpackMqttPublishTopicName(packet, &topicName, &topicNameSize);
+    publishPacket->topicName = &(packet->bytes[packet->fixedHeaderSize + 2]);
+    publishPacket->topicNameSize = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
+
+    // Fixed header size + topic name size value + topic name size
+    uint16_t packetIdentifierPosition = packet->fixedHeaderSize + 2 + publishPacket->topicNameSize;
+    publishPacket->packetIdentifier = (packet->bytes[packetIdentifierPosition] << 8) + packet->bytes[packetIdentifierPosition + 1];
 
     // Fixed header size + topic name size value + topic name size + packet identifier
-    uint16_t payloadPosition = packet->fixedHeaderSize + 2 + topicNameSize + 2;
-    (*payload) = &(packet->bytes[payloadPosition]);
-
+    publishPacket->payload = &(packet->bytes[packet->fixedHeaderSize + 2 + publishPacket->topicNameSize + 2]);
     // Remaining size - topic name size value - topic name size - packet identifier
-    (*payloadSize) = packet->remainingSize - 2 - topicNameSize - 2;
+    publishPacket->payloadSize = packet->remainingSize - 2 - publishPacket->topicNameSize - 2;
 }

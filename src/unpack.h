@@ -25,7 +25,6 @@ int32_t unpackMqttChunk
 );
 
 void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdentifier);
-void unpackMqttPublishTopicName(struct MqttPacket *packet, uint8_t **topicName, uint16_t *topicNameSize);
-void unpackMqttPublishPayload(struct MqttPacket *packet, uint8_t **payload, uint16_t *payloadSize);
+void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket);
 
-#endif
+#endif 

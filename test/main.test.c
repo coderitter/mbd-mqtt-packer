@@ -188,21 +188,13 @@ int main()
     printf("\n");
 
     failedAssertions += itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader();
-    failedAssertions += itShouldUnpackThePacketIdentifierOfPublish();
 
     printf("\n");
-    printf("unpackMqttPublishTopicName\n");
-    printf("--------------------------\n");
+    printf("unpackMqttPublish\n");
+    printf("-----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldUnpackThePublishTopicName();
-
-    printf("\n");
-    printf("unpackMqttPublishPayload\n");
-    printf("------------------------\n");
-    printf("\n");
-
-    failedAssertions += itShouldUnpackThePublishPayload();
+    failedAssertions += itShouldUnpackAPublishPacket();
 
     printf("\n");
     printf("Total failed assertions: %i\n", failedAssertions);

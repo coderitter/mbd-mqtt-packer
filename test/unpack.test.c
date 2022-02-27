@@ -748,117 +748,73 @@ static uint16_t itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader()
     return failedAssertions;
 }
 
-void itShouldUnpackThePacketIdentifierOfPublishCallback(struct MqttPacket *m)
+void itShouldUnpackAPublishPacketCallback(struct MqttPacket *m)
 {
     callbackCounter++;
-    uint16_t packetIdentifier = 0;
+    struct MqttPublishPacket publish;
 
-    unpackMqttPacketIdentifier(m, &packetIdentifier);
+    unpackMqttPublish(m, &publish);
 
-    if (packetIdentifier != 0xAABB)
+    if (publish.dup != 1)
     {
-        printf("Expected packetIdentifier to be 0xAABB but was 0x%X\n", packetIdentifier);
+        printf("Expected dup to be 1 but was %i\n", publish.dup);
+        failedAssertions++;
+    }
+
+    if (publish.qos != MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE)
+    {
+        printf("Expected dup to be 0x02 but was 0x%X\n", publish.qos);
+        failedAssertions++;
+    }
+
+    if (publish.retain != 1)
+    {
+        printf("Expected retain to be 1 but was %i\n", publish.dup);
+        failedAssertions++;
+    }
+
+    if (publish.topicName != &(m->bytes[4]))
+    {
+        printf("Expected topicName to be %p but was %p\n", &(m->bytes[4]), publish.topicName);
+        failedAssertions++;
+    }
+
+    if (publish.topicNameSize != 5)
+    {
+        printf("Expected topicNameSize to be 5 but was %i\n", publish.topicNameSize);
+        failedAssertions++;
+    }
+
+    if (publish.packetIdentifier != 0xAABB)
+    {
+        printf("Expected packetIdentifier to be 0xAABB but was 0x%X\n", publish.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (publish.payload != &(m->bytes[11]))
+    {
+        printf("Expected payload to be %p but was %p\n", &(m->bytes[11]), publish.payload);
+        failedAssertions++;
+    }
+
+    if (publish.payloadSize != 3)
+    {
+        printf("Expected payloadSize to be 3 but was %i\n", publish.payloadSize);
         failedAssertions++;
     }
 }
 
-static uint16_t itShouldUnpackThePacketIdentifierOfPublish()
+static uint16_t itShouldUnpackAPublishPacket()
 {
-    printf("It should unpack the packet identifier of PUBLISH\n");
+    printf("It should unpack a PUBLISH packet\n");
     failedAssertions = 0;
     callbackCounter = 0;
 
-    uint8_t bytes[] = { 0x30, 0x05, 0x00, 0x01, 0x64, 0xAA, 0xBB };
-    struct MqttPacket m = { .bytes = bytes };
-
-    currentSize = 7;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 7, itShouldUnpackThePacketIdentifierOfPublishCallback);
-
-    if (callbackCounter != 1)
-    {
-        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
-        failedAssertions++;
-    }
-    
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
-}
-
-void itShouldUnpackThePublishTopicNameCallback(struct MqttPacket *m)
-{
-    callbackCounter++;
-    uint8_t *topicName = 0;
-    uint16_t topicNameSize = 0;
-
-    unpackMqttPublishTopicName(m, &topicName, &topicNameSize);
-
-    if (topicName != &(m->bytes[4]))
-    {
-        printf("Expected topicName to be %p but was %p\n", &(m->bytes[4]), topicName);
-        failedAssertions++;
-    }
-
-    if (topicNameSize != 5)
-    {
-        printf("Expected topicNameSize to be 5 but was %i\n", topicNameSize);
-        failedAssertions++;
-    }
-}
-
-static uint16_t itShouldUnpackThePublishTopicName()
-{
-    printf("It should unpack the packet identifier of PUBLISH\n");
-    failedAssertions = 0;
-    callbackCounter = 0;
-
-    uint8_t bytes[] = { 0x30, 0x09, 0x00, 0x05, 0x54, 0x4F, 0x50, 0x49, 0x43, 0xAA, 0xBB };
-    struct MqttPacket m = { .bytes = bytes };
-
-    currentSize = 11;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 11, itShouldUnpackThePublishTopicNameCallback);
-
-    if (callbackCounter != 1)
-    {
-        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
-        failedAssertions++;
-    }
-    
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
-}
-
-void itShouldUnpackThePublishPayloadCallback(struct MqttPacket *m)
-{
-    callbackCounter++;
-    uint8_t *payload = 0;
-    uint16_t payloadSize = 0;
-
-    unpackMqttPublishPayload(m, &payload, &payloadSize);
-
-    if (payload != &(m->bytes[11]))
-    {
-        printf("Expected payload to be %p but was %p\n", &(m->bytes[11]), payload);
-        failedAssertions++;
-    }
-
-    if (payloadSize != 3)
-    {
-        printf("Expected payloadSize to be 3 but was %i\n", payloadSize);
-        failedAssertions++;
-    }
-}
-
-static uint16_t itShouldUnpackThePublishPayload()
-{
-    printf("It should unpack the packet identifier of PUBLISH\n");
-    failedAssertions = 0;
-    callbackCounter = 0;
-
-    uint8_t bytes[] = { 0x30, 0x0C, 0x00, 0x05, 0x54, 0x4F, 0x50, 0x49, 0x43, 0xAA, 0xBB, 0x00, 0x01, 0x02 };
+    uint8_t bytes[] = { 0x3D, 0x0C, 0x00, 0x05, 0x54, 0x4F, 0x50, 0x49, 0x43, 0xAA, 0xBB, 0x00, 0x01, 0x02 };
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 14;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 14, itShouldUnpackThePublishPayloadCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 14, itShouldUnpackAPublishPacketCallback);
 
     if (callbackCounter != 1)
     {
@@ -869,4 +825,3 @@ static uint16_t itShouldUnpackThePublishPayload()
     printf("Failed assertions: %i\n\n", failedAssertions);
     return failedAssertions;
 }
-
