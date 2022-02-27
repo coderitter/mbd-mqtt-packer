@@ -3,81 +3,75 @@
 
 #include <stdint.h>
 
-#define MQTT_CONTROL_PACKET_TYPE 0xF0
-#define MQTT_CONTROL_PACKET_TYPE_RESERVED1 0x00
-
 /**
  * @brief After a Network Connection is established by a Client to a Server, the first Packet sent from the Client to the Server MUST be a CONNECT Packet.
  */
-#define MQTT_CONTROL_PACKET_TYPE_CONNECT 0x10
+#define MQTT_PACKET_CONNECT 0x10
 
 /**
  * @brief The CONNACK Packet is the packet sent by the Server in response to a CONNECT Packet received from a Client.
  */
-#define MQTT_CONTROL_PACKET_TYPE_CONNACK 0x20
+#define MQTT_PACKET_CONNACK 0x20
 
 /**
  * @brief A PUBLISH Control Packet is sent from a Client to a Server or from Server to a Client to transport an Application Message.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PUBLISH 0x30
+#define MQTT_PACKET_PUBLISH 0x30
 
 /**
  * @brief A PUBACK Packet is the response to a PUBLISH Packet with QoS level 1.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PUBACK 0x40
+#define MQTT_PACKET_PUBACK 0x40
 
 /**
  * @brief A PUBREC Packet is the response to a PUBLISH Packet with QoS 2. It is the second packet of the QoS 2 protocol exchange.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PUBREC 0x50
+#define MQTT_PACKET_PUBREC 0x50
 
 /**
  * @brief A PUBREL Packet is the response to a PUBREC Packet. It is the third packet of the QoS 2 protocol exchange.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PUBREL 0x60
+#define MQTT_PACKET_PUBREL 0x60
 
 /**
  * @brief The PUBCOMP Packet is the response to a PUBREL Packet. It is the fourth and final packet of the QoS 2 protocol exchange.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PUBCOMP 0x70
+#define MQTT_PACKET_PUBCOMP 0x70
 
 /**
  * @brief The SUBSCRIBE Packet is sent from the Client to the Server to create one or more Subscriptions. Each Subscription registers a Client’s interest in one or more Topics. The Server sends PUBLISH Packets to the Client in order to forward Application Messages that were published to Topics that match these Subscriptions. The SUBSCRIBE Packet also specifies (for each Subscription) the maximum QoS with which the Server can send Application Messages to the Client.
  */
-#define MQTT_CONTROL_PACKET_TYPE_SUBSCRIBE 0x80
+#define MQTT_PACKET_SUBSCRIBE 0x80
 
 /**
  * @brief A SUBACK Packet is sent by the Server to the Client to confirm receipt and processing of a SUBSCRIBE Packet.
  */
-#define MQTT_CONTROL_PACKET_TYPE_SUBACK 0x90
+#define MQTT_PACKET_SUBACK 0x90
 
 /**
  * @brief The payload for the UNSUBSCRIBE Packet contains the list of Topic Filters that the Client wishes to unsubscribe from.
  */
-#define MQTT_CONTROL_PACKET_TYPE_UNSUBSCRIBE 0xA0
+#define MQTT_PACKET_UNSUBSCRIBE 0xA0
 
 /**
  * @brief The UNSUBACK Packet is sent by the Server to the Client to confirm receipt of an UNSUBSCRIBE Packet.
  */
-#define MQTT_CONTROL_PACKET_TYPE_UNSUBACK 0xB0
+#define MQTT_PACKET_UNSUBACK 0xB0
 
 /**
  * @brief The PINGREQ Packet is sent from a Client to the Server.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PINGREQ 0xC0
+#define MQTT_PACKET_PINGREQ 0xC0
 
 /**
  * @brief A PINGRESP Packet is sent by the Server to the Client in response to a PINGREQ Packet. It indicates that the Server is alive.
  */
-#define MQTT_CONTROL_PACKET_TYPE_PINGRESP 0xD0
+#define MQTT_PACKET_PINGRESP 0xD0
 
 /**
  * @brief The DISCONNECT Packet is the final Control Packet sent from the Client to the Server. It indicates that the Client is disconnecting cleanly.
  */
-#define MQTT_CONTROL_PACKET_TYPE_DISCONNECT 0xE0
-
-#define MQTT_CONTROL_PACKET_TYPE_RESERVED2 0xF0
-
+#define MQTT_PACKET_DISCONNECT 0xE0
 
 #define MQTT_CONNACK_VARIABLE_HEADER_FLAGS_SESSION_PRESENT 0x01
 
@@ -139,14 +133,20 @@ struct MqttPacket
     /**
      * Use one the following defines to determine the Control Packet type.
      * 
-     *  - MQTT_CONTROL_PACKET_TYPE_CONNACK
-     *  - MQTT_CONTROL_PACKET_TYPE_PUBACK
-     *  - MQTT_CONTROL_PACKET_TYPE_PUBREC
-     *  - MQTT_CONTROL_PACKET_TYPE_PUBREL
-     *  - MQTT_CONTROL_PACKET_TYPE_PUBCOMP
-     *  - MQTT_CONTROL_PACKET_TYPE_SUBACK
-     *  - MQTT_CONTROL_PACKET_TYPE_UNSUBACK
-     *  - MQTT_CONTROL_PACKET_TYPE_PINGRESP
+     *  - MQTT_PACKET_CONNECT
+     *  - MQTT_PACKET_CONNACK
+     *  - MQTT_PACKET_PUBLISH
+     *  - MQTT_PACKET_PUBACK
+     *  - MQTT_PACKET_PUBREC
+     *  - MQTT_PACKET_PUBREL
+     *  - MQTT_PACKET_PUBCOMP
+     *  - MQTT_PACKET_SUBSCRIBE
+     *  - MQTT_PACKET_SUBACK
+     *  - MQTT_PACKET_UNSUBSCRIBE
+     *  - MQTT_PACKET_UNSUBACK
+     *  - MQTT_PACKET_PINGREQ
+     *  - MQTT_PACKET_PINGRESP
+     *  - MQTT_PACKET_DISCONNECT
      */
     uint8_t controlPacketTypeAndFlags;
     

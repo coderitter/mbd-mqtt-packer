@@ -140,11 +140,11 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
 {
     if
     (
-        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
-        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_PUBREC ||
-        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_PUBCOMP ||
-        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
-        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_UNSUBACK
+        packet->controlPacketTypeAndFlags == MQTT_PACKET_PUBACK ||
+        packet->controlPacketTypeAndFlags == MQTT_PACKET_PUBREC ||
+        packet->controlPacketTypeAndFlags == MQTT_PACKET_PUBCOMP ||
+        packet->controlPacketTypeAndFlags == MQTT_PACKET_SUBACK ||
+        packet->controlPacketTypeAndFlags == MQTT_PACKET_UNSUBACK
     )
     {
         (*packetIdentifier) = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];

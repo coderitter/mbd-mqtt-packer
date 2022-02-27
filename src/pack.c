@@ -216,7 +216,7 @@ uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[size] = MQTT_CONTROL_PACKET_TYPE_CONNECT;
+    bytes[size] = MQTT_PACKET_CONNECT;
     size++;
 
     /**
@@ -454,7 +454,7 @@ uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes)
      * [MQTT-3.8.1-1] Bits 3,2,1 and 0 of the fixed header of the SUBSCRIBE Control Packet are reserved and MUST be set to 0,0,1 and 0 respectively. The Server MUST treat any other value as malformed and close the Network Connection.
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBLISH | (packet->qos << 1);
+    bytes[0] = MQTT_PACKET_PUBLISH | (packet->qos << 1);
 
     if (packet->dup)
     {
@@ -539,7 +539,7 @@ uint32_t packMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBACK;
+    bytes[0] = MQTT_PACKET_PUBACK;
     size++;
 
     /**
@@ -571,7 +571,7 @@ uint32_t packMqttPubRec(uint16_t packetIdentifier, uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBREC;
+    bytes[0] = MQTT_PACKET_PUBREC;
     size++;
 
     /**
@@ -603,7 +603,7 @@ uint32_t packMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBREL | 0x02;
+    bytes[0] = MQTT_PACKET_PUBREL | 0x02;
     size++;
 
     /**
@@ -635,7 +635,7 @@ uint32_t packMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBCOMP;
+    bytes[0] = MQTT_PACKET_PUBCOMP;
     size++;
 
     /**
@@ -670,7 +670,7 @@ uint32_t packMqttSubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes)
      * [MQTT-3.8.1-1] Bits 3,2,1 and 0 of the fixed header of the SUBSCRIBE Control Packet are reserved and MUST be set to 0,0,1 and 0 respectively. The Server MUST treat any other value as malformed and close the Network Connection.
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_SUBSCRIBE | 0x02;
+    bytes[0] = MQTT_PACKET_SUBSCRIBE | 0x02;
     size++;
 
     /**
@@ -733,7 +733,7 @@ uint32_t packMqttUnsubscribe(struct MqttUnSubscribePacket *packet, uint8_t *byte
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_UNSUBSCRIBE | 0x02;
+    bytes[0] = MQTT_PACKET_UNSUBSCRIBE | 0x02;
     size++;
 
     /**
@@ -790,7 +790,7 @@ uint32_t packMqttPingReq(uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PINGREQ;
+    bytes[0] = MQTT_PACKET_PINGREQ;
 
     /**
      * Fixed header - Remaining length
@@ -807,7 +807,7 @@ uint32_t packMqttDisconnect(uint8_t *bytes)
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_DISCONNECT;
+    bytes[0] = MQTT_PACKET_DISCONNECT;
 
     /**
      * Fixed header - Remaining length
