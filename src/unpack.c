@@ -18,8 +18,7 @@ int32_t unpackMqttChunk
         if (packet->size == 0)
         {
             packet->fixedHeaderSize = 0;
-            packet->controlPacketType = 0;
-            packet->flags = 0;
+            packet->controlPacketTypeAndFlags = 0;
             packet->remainingSize = 0;
         } 
 
@@ -27,8 +26,7 @@ int32_t unpackMqttChunk
         if (packet->size == 0 && (*currentSize) >= 1)
         {
             packet->fixedHeaderSize = 2;
-            packet->controlPacketType = packet->bytes[0] & MQTT_CONTROL_PACKET_TYPE;
-            packet->flags = packet->bytes[0] & 0xF;
+            packet->controlPacketTypeAndFlags = packet->bytes[0];
         }
 
         // Read the second of two bytes of the fixed header which is always present and
@@ -122,8 +120,7 @@ int32_t unpackMqttChunk
             // Reset the MQTT packet
             packet->size = 0;
             packet->fixedHeaderSize = 0;
-            packet->controlPacketType = 0;
-            packet->flags = 0;
+            packet->controlPacketTypeAndFlags = 0;
             packet->remainingSize = 0;
         }
         else
@@ -143,11 +140,11 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
 {
     if
     (
-        packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
-        packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBREC ||
-        packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBCOMP ||
-        packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
-        packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_UNSUBACK
+        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
+        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_PUBREC ||
+        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_PUBCOMP ||
+        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
+        packet->controlPacketTypeAndFlags == MQTT_CONTROL_PACKET_TYPE_UNSUBACK
     )
     {
         (*packetIdentifier) = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
@@ -156,9 +153,9 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
 
 void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket)
 {
-    publishPacket->dup = packet->flags & MQTT_PUBLISH_FIXED_HEADER_FLAG_DUP ? 1 : 0;
-    publishPacket->qos = packet->flags & MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS;
-    publishPacket->retain = packet->flags & MQTT_PUBLISH_FIXED_HEADER_FLAG_RETAIN ? 1 : 0;
+    publishPacket->dup = packet->controlPacketTypeAndFlags & MQTT_PUBLISH_FIXED_HEADER_FLAG_DUP ? 1 : 0;
+    publishPacket->qos = packet->controlPacketTypeAndFlags & MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS;
+    publishPacket->retain = packet->controlPacketTypeAndFlags & MQTT_PUBLISH_FIXED_HEADER_FLAG_RETAIN ? 1 : 0;
 
     publishPacket->topicName = &(packet->bytes[packet->fixedHeaderSize + 2]);
     publishPacket->topicNameSize = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];

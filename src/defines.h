@@ -252,8 +252,6 @@ struct MqttPacket
     uint16_t fixedHeaderSize;
 
     /**
-     * @brief The 4 bits of the fixed header Control Packet type which are still on the bit positions 7 to 4, but the bit position 3 to 0 having a value of zero.
-     * 
      * Use one the following defines to determine the Control Packet type.
      * 
      *  - MQTT_CONTROL_PACKET_TYPE_CONNACK
@@ -265,13 +263,8 @@ struct MqttPacket
      *  - MQTT_CONTROL_PACKET_TYPE_UNSUBACK
      *  - MQTT_CONTROL_PACKET_TYPE_PINGRESP
      */
-    uint8_t controlPacketType;
+    uint8_t controlPacketTypeAndFlags;
     
-    /**
-     * @brief The flag part of the fixed header with the bits 7 to 4 having a value of zero.
-     */
-    uint8_t flags;
-
     /**
      * @brief The remaining size which contains the size of the variable header and the payload.
      */
