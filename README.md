@@ -27,7 +27,7 @@ struct MqttPacket mqttPacket =
 
 void onMqttPacketComplete(struct MqttPacket *packet)
 {
-    if (packet->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
+    if (packet->type == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
     {
         struct MqttPublishPacket publish;
         unpackMqttPublish(packet, publish);
