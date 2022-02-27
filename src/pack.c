@@ -58,7 +58,7 @@ uint32_t getMqttPublishSize(struct MqttPublishPacket *packet)
     uint32_t size = 2 + packet->topicNameSize;
 
     // Packet identifier - The Packet Identifier field is only present in PUBLISH Packets where the QoS level is 1 or 2.
-    if (packet->qos == MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_LEAST_ONCE || packet->qos == MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE)
+    if (packet->qos == MQTT_QOS_AT_LEAST_ONCE || packet->qos == MQTT_QOS_EXACTLY_ONCE)
     {
         size += 2;
     }
@@ -285,32 +285,32 @@ uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes)
     // [MQTT-3.1.3-7] If the Client supplies a zero-byte ClientId, the Client MUST also set CleanSession to 1.
     if (packet->cleanSession || packet->clientIdentifierSize == 0)
     {
-        connectFlags |= MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_CLEAN_SESSION;
+        connectFlags |= 0x02;
     }
 
     if (packet->willMessageSize > 0 || packet->willTopicSize > 0)
     {
-        connectFlags |= MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_FLAG;
+        connectFlags |= 0x04;
     }
 
     if (packet->willQos)
     {
-        connectFlags |= packet->willQos;
+        connectFlags |= (packet->willQos << 3);
     }
 
     if (packet->willRetain)
     {
-        connectFlags |= MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_RETAIN;
+        connectFlags |= 0x20;
     }
 
     if (packet->userNameSize > 0)
     {
-        connectFlags |= MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_USERNAME;
+        connectFlags |= 0x80;
     }
 
     if (packet->passwordSize > 0)
     {
-        connectFlags |= MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_PASSWORD;
+        connectFlags |= 0x40;
     }
 
     bytes[size] = connectFlags;
@@ -454,16 +454,16 @@ uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes)
      * [MQTT-3.8.1-1] Bits 3,2,1 and 0 of the fixed header of the SUBSCRIBE Control Packet are reserved and MUST be set to 0,0,1 and 0 respectively. The Server MUST treat any other value as malformed and close the Network Connection.
      */
 
-    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBLISH | packet->qos;
+    bytes[0] = MQTT_CONTROL_PACKET_TYPE_PUBLISH | (packet->qos << 1);
 
     if (packet->dup)
     {
-        bytes[0] |= MQTT_PUBLISH_FIXED_HEADER_FLAG_DUP;
+        bytes[0] |= 0x08;
     }
 
     if (packet->retain)
     {
-        bytes[0] |= MQTT_PUBLISH_FIXED_HEADER_FLAG_RETAIN;
+        bytes[0] |= 0x01;
     }
 
     size++;
@@ -478,7 +478,7 @@ uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes)
     remainingLength += 2 + packet->topicNameSize;
 
     // Packet identifier - The Packet Identifier field is only present in PUBLISH Packets where the QoS level is 1 or 2.
-    if (packet->qos == MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_LEAST_ONCE || packet->qos == MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE)
+    if (packet->qos == MQTT_QOS_AT_LEAST_ONCE || packet->qos == MQTT_QOS_EXACTLY_ONCE)
     {
         remainingLength += 2;
     }

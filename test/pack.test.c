@@ -231,7 +231,7 @@ static uint16_t itShouldPackConnect()
         .willTopicSize = 2,
         .willMessage = willMessage,
         .willMessageSize = 3,
-        .willQos = MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_EXACTLY_ONCE,
+        .willQos = MQTT_QOS_EXACTLY_ONCE,
         .willRetain = 1,
         .userName = userName,
         .userNameSize = 4,
@@ -656,7 +656,7 @@ static uint16_t itShouldPackPublish()
     struct MqttPublishPacket parameter = {
         .packetIdentifier = 0xAABB,
         .dup = 1,
-        .qos = MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE,
+        .qos = MQTT_QOS_EXACTLY_ONCE,
         .retain = 1,
         .topicName = topicName,
         .topicNameSize = 5,
@@ -970,7 +970,7 @@ static uint16_t itShouldPackSubscribe()
         .packetIdentifier = 0xAABB,
         .topicFilter = topicFilter,
         .topicFilterSize = 5,
-        .qos = MQTT_SUBSCRIBE_PAYLOAD_QOS_EXACTLY_ONCE
+        .qos = MQTT_QOS_EXACTLY_ONCE
     };
 
     uint8_t bytes[12];
@@ -1081,7 +1081,7 @@ static uint16_t itShouldPackUnsubscribe()
         .packetIdentifier = 0xAABB,
         .topicFilter = topicFilter,
         .topicFilterSize = 5,
-        .qos = MQTT_SUBSCRIBE_PAYLOAD_QOS_EXACTLY_ONCE
+        .qos = MQTT_QOS_EXACTLY_ONCE
     };
 
     uint8_t bytes[11];

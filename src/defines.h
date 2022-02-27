@@ -78,78 +78,6 @@
 
 #define MQTT_CONTROL_PACKET_TYPE_RESERVED2 0xF0
 
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_RESERVED 0x00
-
-/**
- * @brief This bit specifies the handling of the Session state. The Client and Server can store Session state to enable reliable messaging to continue across a sequence of Network Connections. This bit is used to control the lifetime of the Session state.
- * 
- * The Session state in the Client consists of:
- *  - QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
- *  - QoS 2 messages which have been received from the Server, but have not been completely acknowledged. 
- * 
- * [MQTT-3.1.2-4] If CleanSession is set to 0, the Server MUST resume communications with the Client based on state from the current Session (as identified by the Client identifier). If there is no Session associated with the Client identifier the Server MUST create a new Session. The Client and Server MUST store the Session after the Client and Server are disconnected.
- * [MQTT-3.1.2-5] After the disconnection of a Session that had CleanSession set to 0, the Server MUST store further QoS 1 and QoS 2 messages that match any subscriptions that the client had at the time of disconnection as part of the Session state. It MAY also store QoS 0 messages that meet the same criteria.
- * [MQTT-3.1.2-6] If CleanSession is set to 1, the Client and Server MUST discard any previous Session and start a new one. This Session lasts as long as the Network Connection. State data associated with this Session MUST NOT be reused in any subsequent Session.
- * [MQTT-3.1.2.7] Retained messages do not form part of the Session state in the Server, they MUST NOT be deleted when the Session ends.
- */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_CLEAN_SESSION 0x02
-
-/**
- * @brief 
- * 
- * Situations in which the Will Message is published include, but are not limited to:
- *  - An I/O error or network failure detected by the Server.
- *  - The Client fails to communicate within the Keep Alive time.
- *  - The Client closes the Network Connection without first sending a DISCONNECT Packet.
- *  - The Server closes the Network Connection because of a protocol error.
- * 
- * The Server SHOULD publish Will Messages promptly. In the case of a Server shutdown or failure the server MAY defer publication of Will Messages until a subsequent restart. If this happens there might be a delay between the time the server experienced failure and a Will Message being published.
- * 
- * [MQTT-3.1.2-8] If the Will Flag is set to 1 this indicates that, if the Connect request is accepted, a Will Message MUST be stored on the Server and associated with the Network Connection. The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet.
- * [MQTT-3.1.2-9] If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the Server, and the Will Topic and Will Message fields MUST be present in the payload.
- * [MQTT-3.1.2-10] The Will Message MUST be removed from the stored Session state in the Server once it has been published or the Server has received a DISCONNECT packet from the Client.
- * [MQTT-3.1.2-11] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload.
- * [MQTT-3.1.2-12] If the Will Flag is set to 0, a Will Message MUST NOT be published when this Network Connection ends.
- */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_FLAG 0x04
-
-/**
- * @brief These two bits specify the QoS level to be used when publishing the Will Message.
- * 
- * [MQTT-3.1.2-13] If the Will Flag is set to 0, then the Will QoS MUST be set to 0 (0x00).
- * [MQTT-3.1.2-14] If the Will Flag is set to 1, the value of Will QoS can be 0 (0x00), 1 (0x01), or 2 (0x02). It MUST NOT be 3 (0x03).
- */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS 0x18
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_MOST_ONCE 0x00
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_LEAST_ONCE 0x08
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_EXACTLY_ONCE 0x10
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_RESERVED 0x18
-
-/**
- * @brief This bit specifies if the Will Message is to be Retained when it is published.
- * 
- * [MQTT-3.1.2-15] If the Will Flag is set to 0, then the Will Retain Flag MUST be set to 0.
- * [MQTT-3.1.2-16] If the Will Flag is set to 1 and if Will Retain is set to 0, the Server MUST publish the Will Message as a non-retained message.
- * [MQTT-3.1.2-17] If the Will Flag is set to 1 and if Will Retain is set to 1, the Server MUST publish the Will Message as a retained message.
- */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_RETAIN 0x20
-
-/**
- * @brief 
- * 
- * [MQTT-3.1.2-20] If the Password Flag is set to 0, a password MUST NOT be present in the payload.
- * [MQTT-3.1.2-21] If the Password Flag is set to 1, a password MUST be present in the payload.
- * [MQTT-3.1.2-22] If the User Name Flag is set to 0, the Password Flag MUST be set to 0.
- */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_PASSWORD 0x40
-
-/**
- * @brief 
- * 
- * [MQTT-3.1.2-18] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload.
- * [MQTT-3.1.2-19] If the User Name Flag is set to 1, a user name MUST be present in the payload.
- */
-#define MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_USERNAME 0x80
 
 #define MQTT_CONNACK_VARIABLE_HEADER_FLAGS_SESSION_PRESENT 0x01
 
@@ -183,53 +111,10 @@
  */
 #define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_BAD_NOT_AUTHORIZED 0x05
 
-/**
- * @brief If the DUP flag is set to 0, it indicates that this is the first occasion that the Client or Server has attempted to send this MQTT PUBLISH Packet. If the DUP flag is set to 1, it indicates that this might be re-delivery of an earlier attempt to send the Packet.
- * 
- * [MQTT-3.3.1-1] The DUP flag MUST be set to 1 by the Client or Server when it attempts to re-deliver a PUBLISH Packet.
- * [MQTT-3.3.1-2] The DUP flag MUST be set to 0 for all QoS 0 messages.
- * [MQTT-3.3.1-3] The value of the DUP flag from an incoming PUBLISH packet is not propagated when the PUBLISH Packet is sent to subscribers by the Server. The DUP flag in the outgoing PUBLISH packet is set independently to the incoming PUBLISH packet, its value MUST be determined solely by whether the outgoing PUBLISH packet is a retransmission.
- */
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_DUP 0x08
-
-/**
- * @brief This field indicates the level of assurance for delivery of an Application Message.
- * 
- * Use one of the defines
- *  - MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_MOST_ONCE
- *  - MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_LEAST_ONCE
- *  - MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE
- * 
- * [MQTT-3.3.1-4] A PUBLISH Packet MUST NOT have both QoS bits set to 1. If a Server or Client receives a PUBLISH Packet which has both QoS bits set to 1 it MUST close the Network Connection.
- */
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS 0x06
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_MOST_ONCE 0x00
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_LEAST_ONCE 0x02
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE 0x04
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_RESERVED 0x06
-
-/**
- * @brief 
- * 
- * [MQTT-3.3.1-5] If the RETAIN flag is set to 1, in a PUBLISH Packet sent by a Client to a Server, the Server MUST store the Application Message and its QoS, so that it can be delivered to future subscribers whose subscriptions match its topic name.
- * [MQTT-3.3.1-6] When a new subscription is established, the last retained message, if any, on each matching topic name MUST be sent to the subscriber.
- * [MQTT-3.3.1-7] If the Server receives a QoS 0 message with the RETAIN flag set to 1 it MUST discard any message previously retained for that topic. It SHOULD store the new QoS 0 message as the new retained message for that topic, but MAY choose to discard it at any time - if this happens there will be no retained message for that topic.
- * [MQTT-3.3.1-8] When sending a PUBLISH Packet to a Client the Server MUST set the RETAIN flag to 1 if a message is sent as a result of a new subscription being made by a Client.
- * [MQTT-3.3.1-9] It MUST set the RETAIN flag to 0 when a PUBLISH Packet is sent to a Client because it matches an established subscription regardless of how the flag was set in the message it received.
- * [MQTT-3.3.1-10] A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients with a subscription matching the topic name. Additionally any existing retained message with the same topic name MUST be removed and any future subscribers for the topic will not receive a retained message. “As normal” means that the RETAIN flag is not set in the message received by existing Clients.
- * [MQTT-3.3.1-11] A zero byte retained message MUST NOT be stored as a retained message on the Server.
- * [MQTT-3.3.1-12] If the RETAIN flag is 0, in a PUBLISH Packet sent by a Client to a Server, the Server MUST NOT store the message and MUST NOT remove or replace any existing retained message.
- */
-#define MQTT_PUBLISH_FIXED_HEADER_FLAG_RETAIN 0x01
-
-#define MQTT_CONNECT_PAYLOAD_QOS_AT_MOST_ONCE 0x00
-#define MQTT_CONNECT_PAYLOAD_QOS_AT_LEAST_ONCE 0x02
-#define MQTT_CONNECT_PAYLOAD_QOS_AT_EXACTLY_ONCE 0x04
-
-#define MQTT_SUBSCRIBE_PAYLOAD_QOS_AT_MOST_ONCE 0x00
-#define MQTT_SUBSCRIBE_PAYLOAD_QOS_AT_LEAST_ONCE 0x01
-#define MQTT_SUBSCRIBE_PAYLOAD_QOS_EXACTLY_ONCE 0x02
-#define MQTT_SUBSCRIBE_PAYLOAD_QOS_RESERVED 0x03
+#define MQTT_QOS_AT_MOST_ONCE 0x00
+#define MQTT_QOS_AT_LEAST_ONCE 0x01
+#define MQTT_QOS_EXACTLY_ONCE 0x02
+#define MQTT_QOS_RESERVED 0x03
 
 /**
  * @brief Contains the bytes, sizes and pointers regarding an MQTT packet.
@@ -326,6 +211,20 @@ struct MqttConnectPacket
 
     /**
      * @brief The Will Message defines the Application Message that is to be published to the Will Topic.
+     * 
+     * Situations in which the Will Message is published include, but are not limited to:
+     *  - An I/O error or network failure detected by the Server.
+     *  - The Client fails to communicate within the Keep Alive time.
+     *  - The Client closes the Network Connection without first sending a DISCONNECT Packet.
+     *  - The Server closes the Network Connection because of a protocol error.
+     * 
+     * The Server SHOULD publish Will Messages promptly. In the case of a Server shutdown or failure the server MAY defer publication of Will Messages until a subsequent restart. If this happens there might be a delay between the time the server experienced failure and a Will Message being published.
+     * 
+     * [MQTT-3.1.2-8] If the Will Flag is set to 1 this indicates that, if the Connect request is accepted, a Will Message MUST be stored on the Server and associated with the Network Connection. The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet.
+     * [MQTT-3.1.2-9] If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the Server, and the Will Topic and Will Message fields MUST be present in the payload.
+     * [MQTT-3.1.2-10] The Will Message MUST be removed from the stored Session state in the Server once it has been published or the Server has received a DISCONNECT packet from the Client.
+     * [MQTT-3.1.2-11] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload.
+     * [MQTT-3.1.2-12] If the Will Flag is set to 0, a Will Message MUST NOT be published when this Network Connection ends.
      */
     uint8_t *willMessage;
     uint8_t willMessageSize;
@@ -334,9 +233,12 @@ struct MqttConnectPacket
      * @brief Specify the QoS level to be used when publishing the Will Message.
      * 
      * Use one of the defines
-     *  - MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_MOST_ONCE
-     *  - MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_AT_LEAST_ONCE
-     *  - MQTT_CONNECT_VARIABLE_HEADER_CONNECT_FLAG_WILL_QOS_EXACTLY_ONCE
+     *  - MQTT_QOS_AT_MOST_ONCE
+     *  - MQTT_QOS_AT_LEAST_ONCE
+     *  - MQTT_QOS_EXACTLY_ONCE
+     * 
+     * [MQTT-3.1.2-13] If the Will Flag is set to 0, then the Will QoS MUST be set to 0 (0x00).
+     * [MQTT-3.1.2-14] If the Will Flag is set to 1, the value of Will QoS can be 0 (0x00), 1 (0x01), or 2 (0x02). It MUST NOT be 3 (0x03).
      */
     uint8_t willQos;
 
@@ -349,10 +251,22 @@ struct MqttConnectPacket
      */
     uint8_t willRetain;
 
-
+    /**
+     * @brief 
+     * 
+     * [MQTT-3.1.2-18] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload.
+     * [MQTT-3.1.2-19] If the User Name Flag is set to 1, a user name MUST be present in the payload.
+     */
     uint8_t *userName;
     uint16_t userNameSize;
 
+    /**
+     * @brief 
+     * 
+     * [MQTT-3.1.2-20] If the Password Flag is set to 0, a password MUST NOT be present in the payload.
+     * [MQTT-3.1.2-21] If the Password Flag is set to 1, a password MUST be present in the payload.
+     * [MQTT-3.1.2-22] If the User Name Flag is set to 0, the Password Flag MUST be set to 0.
+     */
     uint8_t *password;
     uint16_t passwordSize;
 
@@ -402,9 +316,9 @@ struct MqttPublishPacket
      * @brief This field indicates the level of assurance for delivery of an Application Message.
      * 
      * Use one of the defines
-     *  - MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_MOST_ONCE
-     *  - MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_AT_LEAST_ONCE
-     *  - MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE
+     *  - MQTT_QOS_AT_MOST_ONCE
+     *  - MQTT_QOS_AT_LEAST_ONCE
+     *  - MQTT_QOS_EXACTLY_ONCE
      * 
      * [MQTT-3.3.1-4] A PUBLISH Packet MUST NOT have both QoS bits set to 1. If a Server or Client receives a PUBLISH Packet which has both QoS bits set to 1 it MUST close the Network Connection.
      */
@@ -481,9 +395,9 @@ struct MqttUnSubscribePacket
      * @brief 
      * 
      * Use one of the defines
-     *  - MQTT_CONNECT_PAYLOAD_QOS_AT_MOST_ONCE
-     *  - MQTT_CONNECT_PAYLOAD_QOS_AT_LEAST_ONCE
-     *  - MQTT_CONNECT_PAYLOAD_QOS_EXACTLY_ONCE
+     *  - MQTT_QOS_AT_MOST_ONCE
+     *  - MQTT_QOS_AT_LEAST_ONCE
+     *  - MQTT_QOS_EXACTLY_ONCE
      * 
      * [MQTT-3.8.4-5] The SUBACK Packet sent by the Server to the Client MUST contain a return code for each Topic Filter/QoS pair. This return code MUST either show the maximum QoS that was granted for that Subscription or indicate that the subscription failed.
      * [MQTT-3.8.4-6] The Server might grant a lower maximum QoS than the subscriber requested. The QoS of Payload Messages sent in response to a Subscription MUST be the minimum of the QoS of the originally published message and the maximum QoS granted by the Server. The server is permitted to send duplicate copies of a message to a subscriber in the case where the original message was published with QoS 1 and the maximum QoS granted was QoS 0.

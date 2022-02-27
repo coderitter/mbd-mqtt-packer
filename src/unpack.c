@@ -153,9 +153,9 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
 
 void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket)
 {
-    publishPacket->dup = packet->controlPacketTypeAndFlags & MQTT_PUBLISH_FIXED_HEADER_FLAG_DUP ? 1 : 0;
-    publishPacket->qos = packet->controlPacketTypeAndFlags & MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS;
-    publishPacket->retain = packet->controlPacketTypeAndFlags & MQTT_PUBLISH_FIXED_HEADER_FLAG_RETAIN ? 1 : 0;
+    publishPacket->dup = packet->controlPacketTypeAndFlags & 0x08 ? 1 : 0;
+    publishPacket->qos = (packet->controlPacketTypeAndFlags & 0x06) >> 1;
+    publishPacket->retain = packet->controlPacketTypeAndFlags & 0x01 ? 1 : 0;
 
     publishPacket->topicName = &(packet->bytes[packet->fixedHeaderSize + 2]);
     publishPacket->topicNameSize = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];

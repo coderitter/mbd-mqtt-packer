@@ -695,7 +695,7 @@ void itShouldUnpackAPublishPacketCallback(struct MqttPacket *m)
         failedAssertions++;
     }
 
-    if (publish.qos != MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE)
+    if (publish.qos != MQTT_QOS_EXACTLY_ONCE)
     {
         printf("Expected dup to be 0x02 but was 0x%X\n", publish.qos);
         failedAssertions++;
