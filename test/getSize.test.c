@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../src/mqttCodec.h"
+#include "../src/unpack.h"
 
 static uint16_t itShouldGetTheCorrectRemainingLengthSizeForA1ByteLength()
 {
@@ -105,7 +105,7 @@ static uint16_t itShouldGetTheCorrectConnectSize()
     uint8_t userName[] = "USER";
     uint8_t password[] = "PASSW";
 
-    struct MqttConnectParameter parameter = {
+    struct MqttConnectPacket parameter = {
         .clientIdentifier = clientIdentifier,
         .clientIdentifierSize = 1,
         .cleanSession = 1,
@@ -139,7 +139,7 @@ static uint16_t itShouldGetTheCorrectConnectSizeWithClientIdentifierSizeOf0()
     printf("It should encode CONNECT with a client identifier size of 0\n");
     uint16_t failedAssertions = 0;
 
-    struct MqttConnectParameter parameter = {
+    struct MqttConnectPacket parameter = {
         .clientIdentifier = 0,
         .clientIdentifierSize = 0,
         .cleanSession = 0,
@@ -176,7 +176,7 @@ static uint16_t itShouldGetTheCorrectPublishSize()
     uint8_t topicName[] = "TOPIC";
     uint8_t payload[] = { 0x00, 0x01, 0x02 };
 
-    struct MqttPublishParameter parameter = {
+    struct MqttPublishPacket parameter = {
         .packetIdentifier = 0xAABB,
         .dup = 1,
         .qos = MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE,
@@ -274,7 +274,7 @@ static uint16_t itShouldGetTheCorrectSubscribeSize()
 
     uint8_t topicFilter[] = "TOPIC";
 
-    struct MqttUnSubscribeParameter parameter = {
+    struct MqttUnSubscribePacket parameter = {
         .packetIdentifier = 0xAABB,
         .topicFilter = topicFilter,
         .topicFilterSize = 5,
@@ -300,7 +300,7 @@ static uint16_t itShouldGetTheCorrectUnsubscribeSize()
 
     uint8_t topicFilter[] = "TOPIC";
 
-    struct MqttUnSubscribeParameter parameter = {
+    struct MqttUnSubscribePacket parameter = {
         .packetIdentifier = 0xAABB,
         .topicFilter = topicFilter,
         .topicFilterSize = 5,

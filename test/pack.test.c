@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../src/mqttCodec.h"
+#include "../src/pack.h"
 
-static uint16_t itShouldEncodeTheRemainingLengthWith1Byte()
+static uint16_t itShouldPackTheRemainingLengthWith1Byte()
 {
-    printf("It should encode the remaining length with 1 byte\n");
+    printf("It should pack the remaining length with 1 byte\n");
 
     uint8_t bytes[2];
-    uint32_t size = encodeMqttRemainingLength(127, bytes);
+    uint32_t size = packMqttRemainingLength(127, bytes);
     uint16_t failedAssertions = 0;
 
     if (size != 1)
@@ -26,13 +26,13 @@ static uint16_t itShouldEncodeTheRemainingLengthWith1Byte()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeTheRemainingLengthWith2Bytes()
+static uint16_t itShouldPackTheRemainingLengthWith2Bytes()
 {
-    printf("It should encode the remaining length with 2 bytes\n");
+    printf("It should pack the remaining length with 2 bytes\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[3];
-    uint32_t size = encodeMqttRemainingLength(128, bytes);
+    uint32_t size = packMqttRemainingLength(128, bytes);
 
     if (size != 2)
     {
@@ -52,7 +52,7 @@ static uint16_t itShouldEncodeTheRemainingLengthWith2Bytes()
         failedAssertions++;
     }
 
-    size = encodeMqttRemainingLength(16383, bytes);
+    size = packMqttRemainingLength(16383, bytes);
 
     if (size != 2)
     {
@@ -76,13 +76,13 @@ static uint16_t itShouldEncodeTheRemainingLengthWith2Bytes()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeTheRemainingLengthWith3Bytes()
+static uint16_t itShouldPackTheRemainingLengthWith3Bytes()
 {
-    printf("It should encode the remaining length with 3 bytes\n");
+    printf("It should pack the remaining length with 3 bytes\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[4];
-    uint32_t size = encodeMqttRemainingLength(16384, bytes);
+    uint32_t size = packMqttRemainingLength(16384, bytes);
 
     if (size != 3)
     {
@@ -108,7 +108,7 @@ static uint16_t itShouldEncodeTheRemainingLengthWith3Bytes()
         failedAssertions++;
     }
 
-    size = encodeMqttRemainingLength(2097151, bytes);
+    size = packMqttRemainingLength(2097151, bytes);
 
     if (size != 3)
     {
@@ -138,13 +138,13 @@ static uint16_t itShouldEncodeTheRemainingLengthWith3Bytes()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeTheRemainingLengthWith4Bytes()
+static uint16_t itShouldPackTheRemainingLengthWith4Bytes()
 {
-    printf("It should encode the remaining length with 4 bytes\n");
+    printf("It should pack the remaining length with 4 bytes\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[5];
-    uint32_t size = encodeMqttRemainingLength(2097152, bytes);
+    uint32_t size = packMqttRemainingLength(2097152, bytes);
 
     if (size != 4)
     {
@@ -176,7 +176,7 @@ static uint16_t itShouldEncodeTheRemainingLengthWith4Bytes()
         failedAssertions++;
     }
 
-    size = encodeMqttRemainingLength(268435455, bytes);
+    size = packMqttRemainingLength(268435455, bytes);
 
     if (size != 4)
     {
@@ -212,9 +212,9 @@ static uint16_t itShouldEncodeTheRemainingLengthWith4Bytes()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeConnect()
+static uint16_t itShouldPackConnect()
 {
-    printf("It should encode CONNECT\n");
+    printf("It should pack CONNECT\n");
     uint16_t failedAssertions = 0;
 
     uint8_t clientIdentifier[] = "C";
@@ -223,7 +223,7 @@ static uint16_t itShouldEncodeConnect()
     uint8_t userName[] = "USER";
     uint8_t password[] = "PASSW";
 
-    struct MqttConnectParameter parameter = {
+    struct MqttConnectPacket parameter = {
         .clientIdentifier = clientIdentifier,
         .clientIdentifierSize = 1,
         .cleanSession = 1,
@@ -241,7 +241,7 @@ static uint16_t itShouldEncodeConnect()
     };
 
     uint8_t bytes[37];
-    uint32_t size = encodeMqttConnect(&parameter, bytes);
+    uint32_t size = packMqttConnect(&parameter, bytes);
 
     if (size != 37)
     {
@@ -512,12 +512,12 @@ static uint16_t itShouldEncodeConnect()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeConnectWithClientIdentifierSizeOf0()
+static uint16_t itShouldPackConnectWithClientIdentifierSizeOf0()
 {
-    printf("It should encode CONNECT with a client identifier size of 0\n");
+    printf("It should pack CONNECT with a client identifier size of 0\n");
     uint16_t failedAssertions = 0;
 
-    struct MqttConnectParameter parameter = {
+    struct MqttConnectPacket parameter = {
         .clientIdentifier = 0,
         .clientIdentifierSize = 0,
         .cleanSession = 0,
@@ -535,7 +535,7 @@ static uint16_t itShouldEncodeConnectWithClientIdentifierSizeOf0()
     };
 
     uint8_t bytes[14];
-    uint32_t size = encodeMqttConnect(&parameter, bytes);
+    uint32_t size = packMqttConnect(&parameter, bytes);
 
     if (size != 14)
     {
@@ -645,15 +645,15 @@ static uint16_t itShouldEncodeConnectWithClientIdentifierSizeOf0()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodePublish()
+static uint16_t itShouldPackPublish()
 {
-    printf("It should encode PUBLISH\n");
+    printf("It should pack PUBLISH\n");
     uint16_t failedAssertions = 0;
 
     uint8_t topicName[] = "TOPIC";
     uint8_t payload[] = { 0x00, 0x01, 0x02 };
 
-    struct MqttPublishParameter parameter = {
+    struct MqttPublishPacket parameter = {
         .packetIdentifier = 0xAABB,
         .dup = 1,
         .qos = MQTT_PUBLISH_FIXED_HEADER_FLAG_QOS_EXACTLY_ONCE,
@@ -665,7 +665,7 @@ static uint16_t itShouldEncodePublish()
     };
 
     uint8_t bytes[14];
-    uint32_t size = encodeMqttPublish(&parameter, bytes);
+    uint32_t size = packMqttPublish(&parameter, bytes);
 
     if (size != 14)
     {
@@ -775,13 +775,13 @@ static uint16_t itShouldEncodePublish()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodePubAck()
+static uint16_t itShouldPackPubAck()
 {
-    printf("It should encode PUBACK\n");
+    printf("It should pack PUBACK\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[4];
-    uint32_t size = encodeMqttPubAck(0xAABB, bytes);
+    uint32_t size = packMqttPubAck(0xAABB, bytes);
 
     if (size != 4)
     {
@@ -821,13 +821,13 @@ static uint16_t itShouldEncodePubAck()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodePubRec()
+static uint16_t itShouldPackPubRec()
 {
-    printf("It should encode PUBREC\n");
+    printf("It should pack PUBREC\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[4];
-    uint32_t size = encodeMqttPubRec(0xAABB, bytes);
+    uint32_t size = packMqttPubRec(0xAABB, bytes);
 
     if (size != 4)
     {
@@ -867,13 +867,13 @@ static uint16_t itShouldEncodePubRec()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodePubRel()
+static uint16_t itShouldPackPubRel()
 {
-    printf("It should encode PUBREL\n");
+    printf("It should pack PUBREL\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[4];
-    uint32_t size = encodeMqttPubRel(0xAABB, bytes);
+    uint32_t size = packMqttPubRel(0xAABB, bytes);
 
     if (size != 4)
     {
@@ -913,13 +913,13 @@ static uint16_t itShouldEncodePubRel()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodePubComp()
+static uint16_t itShouldPackPubComp()
 {
-    printf("It should encode PUBCOMP\n");
+    printf("It should pack PUBCOMP\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[4];
-    uint32_t size = encodeMqttPubComp(0xAABB, bytes);
+    uint32_t size = packMqttPubComp(0xAABB, bytes);
 
     if (size != 4)
     {
@@ -959,14 +959,14 @@ static uint16_t itShouldEncodePubComp()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeSubscribe()
+static uint16_t itShouldPackSubscribe()
 {
-    printf("It should encode SUBSCRIBE\n");
+    printf("It should pack SUBSCRIBE\n");
     uint16_t failedAssertions = 0;
 
     uint8_t topicFilter[] = "TOPIC";
 
-    struct MqttUnSubscribeParameter parameter = {
+    struct MqttUnSubscribePacket parameter = {
         .packetIdentifier = 0xAABB,
         .topicFilter = topicFilter,
         .topicFilterSize = 5,
@@ -974,7 +974,7 @@ static uint16_t itShouldEncodeSubscribe()
     };
 
     uint8_t bytes[12];
-    uint32_t size = encodeMqttSubscribe(&parameter, bytes);
+    uint32_t size = packMqttSubscribe(&parameter, bytes);
 
     if (size != 12)
     {
@@ -1070,14 +1070,14 @@ static uint16_t itShouldEncodeSubscribe()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeUnsubscribe()
+static uint16_t itShouldPackUnsubscribe()
 {
-    printf("It should encode UBSUBSCRIBE\n");
+    printf("It should pack UBSUBSCRIBE\n");
     uint16_t failedAssertions = 0;
 
     uint8_t topicFilter[] = "TOPIC";
 
-    struct MqttUnSubscribeParameter parameter = {
+    struct MqttUnSubscribePacket parameter = {
         .packetIdentifier = 0xAABB,
         .topicFilter = topicFilter,
         .topicFilterSize = 5,
@@ -1085,7 +1085,7 @@ static uint16_t itShouldEncodeUnsubscribe()
     };
 
     uint8_t bytes[11];
-    uint32_t size = encodeMqttUnsubscribe(&parameter, bytes);
+    uint32_t size = packMqttUnsubscribe(&parameter, bytes);
 
     if (size != 11)
     {
@@ -1174,13 +1174,13 @@ static uint16_t itShouldEncodeUnsubscribe()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodePingReq()
+static uint16_t itShouldPackPingReq()
 {
-    printf("It should encode PINGREQ\n");
+    printf("It should pack PINGREQ\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[2];
-    uint32_t size = encodeMqttPingReq(bytes);
+    uint32_t size = packMqttPingReq(bytes);
 
     if (size != 2)
     {
@@ -1206,13 +1206,13 @@ static uint16_t itShouldEncodePingReq()
     return failedAssertions;
 }
 
-static uint16_t itShouldEncodeDisconnect()
+static uint16_t itShouldPackDisconnect()
 {
-    printf("It should encode DISCONNECT\n");
+    printf("It should pack DISCONNECT\n");
     uint16_t failedAssertions = 0;
 
     uint8_t bytes[2];
-    uint32_t size = encodeMqttDisconnect(bytes);
+    uint32_t size = packMqttDisconnect(bytes);
 
     if (size != 2)
     {

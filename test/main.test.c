@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "decode.test.c"
-#include "encode.test.c"
+#include "unpack.test.c"
+#include "pack.test.c"
 #include "getSize.test.c"
 
 int main()
@@ -86,123 +86,123 @@ int main()
     printf("-----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodeDisconnect();
+    failedAssertions += itShouldGetTheCorrectDisconnectSize();
 
     printf("\n");
-    printf("encodeMqttRemainingLength\n");
+    printf("packMqttRemainingLength\n");
     printf("-------------------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodeTheRemainingLengthWith1Byte();
-    failedAssertions += itShouldEncodeTheRemainingLengthWith2Bytes();
-    failedAssertions += itShouldEncodeTheRemainingLengthWith3Bytes();
-    failedAssertions += itShouldEncodeTheRemainingLengthWith4Bytes();
+    failedAssertions += itShouldPackTheRemainingLengthWith1Byte();
+    failedAssertions += itShouldPackTheRemainingLengthWith2Bytes();
+    failedAssertions += itShouldPackTheRemainingLengthWith3Bytes();
+    failedAssertions += itShouldPackTheRemainingLengthWith4Bytes();
 
     printf("\n");
-    printf("encodeMqttConnect\n");
+    printf("packMqttConnect\n");
     printf("-----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodeConnect();
-    failedAssertions += itShouldEncodeConnectWithClientIdentifierSizeOf0();
+    failedAssertions += itShouldPackConnect();
+    failedAssertions += itShouldPackConnectWithClientIdentifierSizeOf0();
 
     printf("\n");
-    printf("encodeMqttPublish\n");
+    printf("packMqttPublish\n");
     printf("-----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodePublish();
+    failedAssertions += itShouldPackPublish();
 
     printf("\n");
-    printf("encodeMqttPubAck\n");
+    printf("packMqttPubAck\n");
     printf("----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodePubAck();
+    failedAssertions += itShouldPackPubAck();
 
     printf("\n");
-    printf("encodeMqttPubRec\n");
+    printf("packMqttPubRec\n");
     printf("----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodePubRec();
+    failedAssertions += itShouldPackPubRec();
 
     printf("\n");
-    printf("encodeMqttPubRel\n");
+    printf("packMqttPubRel\n");
     printf("----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodePubRel();
+    failedAssertions += itShouldPackPubRel();
 
     printf("\n");
-    printf("encodeMqttPubComp\n");
+    printf("packMqttPubComp\n");
     printf("---------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodePubComp();
+    failedAssertions += itShouldPackPubComp();
 
     printf("\n");
-    printf("encodeMqttSubscribe\n");
+    printf("packMqttSubscribe\n");
     printf("-------------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodeSubscribe();
+    failedAssertions += itShouldPackSubscribe();
 
     printf("\n");
-    printf("encodeMqttUnsubscribe\n");
+    printf("packMqttUnsubscribe\n");
     printf("---------------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodeUnsubscribe();
+    failedAssertions += itShouldPackUnsubscribe();
 
     printf("\n");
-    printf("encodePingReq\n");
+    printf("packPingReq\n");
     printf("-------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodePingReq();
+    failedAssertions += itShouldPackPingReq();
 
     printf("\n");
-    printf("encodeDisconnect\n");
+    printf("packDisconnect\n");
     printf("----------------\n");
     printf("\n");
 
-    failedAssertions += itShouldEncodeDisconnect();
+    failedAssertions += itShouldPackDisconnect();
 
     printf("\n");
-    printf("decodeMqttChunk\n");
+    printf("unpackMqttChunk\n");
     printf("---------------\n");
     printf("\n");
 
-    failedAssertions += itShouldDecodeAMessageWithA2ByteHeaderAndAZeroLengthRemainingSize();
-    failedAssertions += itShouldDecodeAMessageWithA2ByteHeader();
-    failedAssertions += itShouldDecodeAMessageWithA3ByteHeader();
-    failedAssertions += itShouldDecodeAMessageWithA4ByteHeader();
-    failedAssertions += itShouldDecodeAMessageWithA5ByteHeader();
-    failedAssertions += itShouldDecodeAMessageWithA5ByteHeaderGivenThrough1ByteChunks();
-    failedAssertions += itShouldMoveTheBytesOfANewMessageToTheBeginning();
+    failedAssertions += itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSize();
+    failedAssertions += itShouldUnpackWithA2ByteHeader();
+    failedAssertions += itShouldUnpackWithA3ByteHeader();
+    failedAssertions += itShouldUnpackWithA4ByteHeader();
+    failedAssertions += itShouldUnpackWithA5ByteHeader();
+    failedAssertions += itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks();
+    failedAssertions += itShouldMoveTheBytesOfANewPacketToTheBeginning();
 
     printf("\n");
-    printf("decodeMqttPacketIdentifier\n");
+    printf("unpackMqttPacketIdentifier\n");
     printf("--------------------------\n");
     printf("\n");
 
-    failedAssertions += itShouldDecodeThePacketIdentifierWhichIsAfterTheFixedHeader();
-    failedAssertions += itShouldDecodeThePacketIdentifierOfPublish();
+    failedAssertions += itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader();
+    failedAssertions += itShouldUnpackThePacketIdentifierOfPublish();
 
     printf("\n");
-    printf("decodeMqttPublishTopicName\n");
+    printf("unpackMqttPublishTopicName\n");
     printf("--------------------------\n");
     printf("\n");
 
-    failedAssertions += itShouldDecodeThePublishTopicName();
+    failedAssertions += itShouldUnpackThePublishTopicName();
 
     printf("\n");
-    printf("decodeMqttPublishPayload\n");
+    printf("unpackMqttPublishPayload\n");
     printf("------------------------\n");
     printf("\n");
 
-    failedAssertions += itShouldDecodeThePublishPayload();
+    failedAssertions += itShouldUnpackThePublishPayload();
 
     printf("\n");
     printf("Total failed assertions: %i\n", failedAssertions);
