@@ -139,24 +139,50 @@ int32_t decodeMqttChunk
     return mqttMessage->fixedHeaderSize + mqttMessage->remainingSize;
 }
 
-void decodeMqttPacketIdentifier(uint8_t *bytes, uint16_t *packetIdentifier)
+void decodeMqttPacketIdentifier(struct MqttMessage *message, uint16_t *packetIdentifier)
 {
+    if
+    (
+        message->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBACK ||
+        message->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBREC ||
+        message->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBCOMP ||
+        message->controlPacketType == MQTT_CONTROL_PACKET_TYPE_SUBACK ||
+        message->controlPacketType == MQTT_CONTROL_PACKET_TYPE_UNSUBACK
+    )
+    {
+        (*packetIdentifier) = (message->bytes[message->fixedHeaderSize] << 8) + message->bytes[message->fixedHeaderSize + 1];
+    }
+    else if (message->controlPacketType == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
+    {
+        uint8_t *topicName = 0;
+        uint16_t topicNameSize = 0;
+        decodeMqttPublishTopicName(message, &topicName, &topicNameSize);
 
+        // Fixed header size + topic name size value + topic name size
+        uint16_t packetIdentifierPosition = message->fixedHeaderSize + 2 + topicNameSize;
+
+        (*packetIdentifier) = (message->bytes[packetIdentifierPosition] << 8) + message->bytes[packetIdentifierPosition + 1];
+    }
 }
 
-void decodeMqttPublishTopicName(uint8_t *bytes, uint8_t *topicName, uint16_t *topicNameSize)
+void decodeMqttPublishTopicName(struct MqttMessage *message, uint8_t **topicName, uint16_t *topicNameSize)
 {
-
+    (*topicName) = &(message->bytes[message->fixedHeaderSize + 2]);
+    (*topicNameSize) = (message->bytes[message->fixedHeaderSize] << 8) + message->bytes[message->fixedHeaderSize + 1];
 }
 
-void decodeMqttPublishPacketIdentifier(uint8_t *bytes, uint8_t *packetIdentifier)
+void decodeMqttPublishPayload(struct MqttMessage *message, uint8_t **payload, uint16_t *payloadSize)
 {
+    uint8_t *topicName = 0;
+    uint16_t topicNameSize = 0;
+    decodeMqttPublishTopicName(message, &topicName, &topicNameSize);
 
-}
+    // Fixed header size + topic name size value + topic name size + packet identifier
+    uint16_t payloadPosition = message->fixedHeaderSize + 2 + topicNameSize + 2;
+    (*payload) = &(message->bytes[payloadPosition]);
 
-void decodeMqttPublishPayload(uint8_t *bytes, uint8_t *payload, uint16_t *payloadSize)
-{
-    
+    // Remaining size - topic name size value - topic name size - packet identifier
+    (*payloadSize) = message->remainingSize - 2 - topicNameSize - 2;
 }
 
 uint8_t getMqttRemainingLengthSize(uint32_t remainingLength)

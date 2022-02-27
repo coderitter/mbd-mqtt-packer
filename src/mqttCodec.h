@@ -518,10 +518,9 @@ int32_t decodeMqttChunk
     void (*onMqttMessageDecoded) (struct MqttMessage *mqttMessage)
 );
 
-void decodeMqttPacketIdentifier(uint8_t *bytes, uint16_t *packetIdentifier);
-void decodeMqttPublishTopicName(uint8_t *bytes, uint8_t *topicName, uint16_t *topicNameSize);
-void decodeMqttPublishPacketIdentifier(uint8_t *bytes, uint8_t *packetIdentifier);
-void decodeMqttPublishPayload(uint8_t *bytes, uint8_t *payload, uint16_t *payloadSize);
+void decodeMqttPacketIdentifier(struct MqttMessage *message, uint16_t *packetIdentifier);
+void decodeMqttPublishTopicName(struct MqttMessage *message, uint8_t **topicName, uint16_t *topicNameSize);
+void decodeMqttPublishPayload(struct MqttMessage *message, uint8_t **payload, uint16_t *payloadSize);
 
 uint8_t getMqttRemainingLengthSize(uint32_t remainingLength);
 uint32_t getMqttConnectSize(struct MqttConnectParameter *parameter);
@@ -543,7 +542,7 @@ uint32_t getMqttDisconnectSize();
  * 
  * @param remainingLength The remaining length which is to by encoded into the bytes array
  * @param bytes A pointer to an array which needs to have up to 4 upcoming bytes
- * @return uint8_t Size of added remaining length
+ * @return uint8_t Size of the resulting remaining length bytes
  */
 uint8_t encodeMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes);
 
