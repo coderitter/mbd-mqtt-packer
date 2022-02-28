@@ -6,7 +6,7 @@ int32_t currentSize = 0;
 uint16_t failedAssertions = 0;
 uint8_t callbackCounter = 0;
 
-void itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback(struct MqttPacket *m)
+void itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 
@@ -51,7 +51,7 @@ static uint16_t itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSize()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 2;
-    uint32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 2, itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback);
+    uint32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 2, itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback, 0);
 
     if (callbackCounter != 1)
     {
@@ -75,7 +75,7 @@ static uint16_t itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSize()
     return failedAssertions;
 }
 
-void itShouldUnpackWithA2ByteHeaderCallback(struct MqttPacket *m)
+void itShouldUnpackWithA2ByteHeaderCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 
@@ -120,7 +120,7 @@ static uint16_t itShouldUnpackWithA2ByteHeader()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 3;
-    uint32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 3, itShouldUnpackWithA2ByteHeaderCallback);
+    uint32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 3, itShouldUnpackWithA2ByteHeaderCallback, 0);
 
     if (callbackCounter != 1)
     {
@@ -144,7 +144,7 @@ static uint16_t itShouldUnpackWithA2ByteHeader()
     return failedAssertions;
 }
 
-void itShouldUnpackWithA3ByteHeaderCallback(struct MqttPacket *m)
+void itShouldUnpackWithA3ByteHeaderCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 }
@@ -159,7 +159,7 @@ static uint16_t itShouldUnpackWithA3ByteHeader()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 4;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackWithA3ByteHeaderCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackWithA3ByteHeaderCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -207,7 +207,7 @@ static uint16_t itShouldUnpackWithA3ByteHeader()
     return failedAssertions;
 }
 
-void itShouldUnpackWithA4ByteHeaderCallback(struct MqttPacket *m)
+void itShouldUnpackWithA4ByteHeaderCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 }
@@ -222,7 +222,7 @@ static uint16_t itShouldUnpackWithA4ByteHeader()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 5;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 5, itShouldUnpackWithA4ByteHeaderCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 5, itShouldUnpackWithA4ByteHeaderCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -270,7 +270,7 @@ static uint16_t itShouldUnpackWithA4ByteHeader()
     return failedAssertions;
 }
 
-void itShouldUnpackWithA5ByteHeaderCallback(struct MqttPacket *m)
+void itShouldUnpackWithA5ByteHeaderCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 }
@@ -285,7 +285,7 @@ static uint16_t itShouldUnpackWithA5ByteHeader()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 6;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 6, itShouldUnpackWithA5ByteHeaderCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 6, itShouldUnpackWithA5ByteHeaderCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -333,7 +333,7 @@ static uint16_t itShouldUnpackWithA5ByteHeader()
     return failedAssertions;
 }
 
-void itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback(struct MqttPacket *m)
+void itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 }
@@ -348,7 +348,7 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 1;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -394,7 +394,7 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
 
     callbackCounter = 0;
     currentSize = 2;
-    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback);
+    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -440,7 +440,7 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
 
     callbackCounter = 0;
     currentSize = 3;
-    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback);
+    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -486,7 +486,7 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
 
     callbackCounter = 0;
     currentSize = 4;
-    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback);
+    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -532,7 +532,7 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
 
     callbackCounter = 0;
     currentSize = 5;
-    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback);
+    packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 1, itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunksCallback, 0);
 
     if (callbackCounter != 0)
     {
@@ -580,7 +580,7 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
     return failedAssertions;
 }
 
-void itShouldMoveTheBytesOfANewPacketToTheBeginningCallback(struct MqttPacket *m)
+void itShouldMoveTheBytesOfANewPacketToTheBeginningCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
 
@@ -622,7 +622,7 @@ static uint16_t itShouldMoveTheBytesOfANewPacketToTheBeginning()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 7;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 7, itShouldMoveTheBytesOfANewPacketToTheBeginningCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 7, itShouldMoveTheBytesOfANewPacketToTheBeginningCallback, 0);
 
     if (callbackCounter != 2)
     {
@@ -646,7 +646,7 @@ static uint16_t itShouldMoveTheBytesOfANewPacketToTheBeginning()
     return failedAssertions;
 }
 
-void itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeaderCallback(struct MqttPacket *m)
+void itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeaderCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
     uint16_t packetIdentifier = 0;
@@ -670,7 +670,7 @@ static uint16_t itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 4;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeaderCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeaderCallback, 0);
 
     if (callbackCounter != 1)
     {
@@ -682,7 +682,7 @@ static uint16_t itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader()
     return failedAssertions;
 }
 
-void itShouldUnpackAConnAckPacketCallback(struct MqttPacket *m)
+void itShouldUnpackAConnAckPacketCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
     struct MqttConnAckPacket connAck;
@@ -712,7 +712,7 @@ static uint16_t itShouldUnpackAConnAckPacket()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 4;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackAConnAckPacketCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackAConnAckPacketCallback, 0);
 
     if (callbackCounter != 1)
     {
@@ -724,7 +724,7 @@ static uint16_t itShouldUnpackAConnAckPacket()
     return failedAssertions;
 }
 
-void itShouldUnpackAPublishPacketCallback(struct MqttPacket *m)
+void itShouldUnpackAPublishPacketCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
     struct MqttPublishPacket publish;
@@ -790,7 +790,7 @@ static uint16_t itShouldUnpackAPublishPacket()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 14;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 14, itShouldUnpackAPublishPacketCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 14, itShouldUnpackAPublishPacketCallback, 0);
 
     if (callbackCounter != 1)
     {
@@ -802,7 +802,7 @@ static uint16_t itShouldUnpackAPublishPacket()
     return failedAssertions;
 }
 
-void itShouldUnpackASubAckPacketCallback(struct MqttPacket *m)
+void itShouldUnpackASubAckPacketCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
     struct MqttSubAckPacket subAck;
@@ -832,7 +832,7 @@ static uint16_t itShouldUnpackASubAckPacket()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 5;
-    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 5, itShouldUnpackASubAckPacketCallback);
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 5, itShouldUnpackASubAckPacketCallback, 0);
 
     if (callbackCounter != 1)
     {

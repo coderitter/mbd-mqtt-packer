@@ -21,7 +21,8 @@ int32_t unpackMqttChunk
     struct MqttPacket *mqttMessage, 
     int32_t *currentSize, 
     int32_t chunkSize,
-    void (*onMqttPacketComplete) (struct MqttPacket *mqttMessage)
+    void (*onMqttPacketComplete) (struct MqttPacket *mqttMessage, void *extraData),
+    void *onMqttPacketCompleteExtraData
 );
 
 void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdentifier);

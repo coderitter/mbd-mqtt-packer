@@ -7,7 +7,8 @@ int32_t unpackMqttChunk
     struct MqttPacket *packet, 
     int32_t *currentSize, 
     int32_t chunkSize,
-    void (*onMqttPacketComplete) (struct MqttPacket *packet)
+    void (*onMqttPacketComplete) (struct MqttPacket *packet, void *extraData),
+    void *onMqttPacketCompleteExtraData
 )
 {
     // Since one chunk might containt more than one MQTT packet, we need
@@ -86,7 +87,7 @@ int32_t unpackMqttChunk
             // Then we call the callback
             if (onMqttPacketComplete != 0)
             {
-                onMqttPacketComplete(packet);
+                onMqttPacketComplete(packet, onMqttPacketCompleteExtraData);
             }
 
             // If the used size of the byte array is even larger than the just parsed
