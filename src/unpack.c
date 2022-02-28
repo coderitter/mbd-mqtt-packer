@@ -151,6 +151,13 @@ void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdent
     }
 }
 
+
+void unpackMqttConnAck(struct MqttPacket *packet, struct MqttConnAckPacket *connAckPacket)
+{    
+    connAckPacket->sessionPresent = packet->bytes[2] & 0x01 ? 1 : 0;
+    connAckPacket->returnCode = packet->bytes[3];
+}
+
 void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket)
 {
     publishPacket->dup = packet->bytes[0] & 0x08 ? 1 : 0;
@@ -168,4 +175,10 @@ void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publ
     publishPacket->payload = &(packet->bytes[packet->fixedHeaderSize + 2 + publishPacket->topicNameSize + 2]);
     // Remaining size - topic name size value - topic name size - packet identifier
     publishPacket->payloadSize = packet->remainingSize - 2 - publishPacket->topicNameSize - 2;
+}
+
+void unpackMqttSubAck(struct MqttPacket *packet, struct MqttSubAckPacket *subAckPacket)
+{
+    subAckPacket->packetIdentifier = (packet->bytes[packet->fixedHeaderSize] << 8) + packet->bytes[packet->fixedHeaderSize + 1];
+    subAckPacket->returnCode = packet->bytes[packet->fixedHeaderSize + 2];
 }

@@ -682,6 +682,48 @@ static uint16_t itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader()
     return failedAssertions;
 }
 
+void itShouldUnpackAConnAckPacketCallback(struct MqttPacket *m)
+{
+    callbackCounter++;
+    struct MqttConnAckPacket connAck;
+
+    unpackMqttConnAck(m, &connAck);
+
+    if (connAck.sessionPresent != 1)
+    {
+        printf("Expected sessionPresent to be 1 but was %i\n", connAck.sessionPresent);
+        failedAssertions++;
+    }
+
+    if (connAck.returnCode != 0x02)
+    {
+        printf("Expected returnCode to be 0x02 but was 0x%X\n", connAck.returnCode);
+        failedAssertions++;
+    }
+}
+
+static uint16_t itShouldUnpackAConnAckPacket()
+{
+    printf("It should unpack a CONNACK packet\n");
+    failedAssertions = 0;
+    callbackCounter = 0;
+
+    uint8_t bytes[] = { 0x20, 0x02, 0x01, 0x02 };
+    struct MqttPacket m = { .bytes = bytes };
+
+    currentSize = 4;
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 4, itShouldUnpackAConnAckPacketCallback);
+
+    if (callbackCounter != 1)
+    {
+        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
+        failedAssertions++;
+    }
+    
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
 void itShouldUnpackAPublishPacketCallback(struct MqttPacket *m)
 {
     callbackCounter++;
@@ -749,6 +791,48 @@ static uint16_t itShouldUnpackAPublishPacket()
 
     currentSize = 14;
     int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 14, itShouldUnpackAPublishPacketCallback);
+
+    if (callbackCounter != 1)
+    {
+        printf("Expected callbackCounter to be 1 but was %i\n", callbackCounter);
+        failedAssertions++;
+    }
+    
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
+void itShouldUnpackASubAckPacketCallback(struct MqttPacket *m)
+{
+    callbackCounter++;
+    struct MqttSubAckPacket subAck;
+
+    unpackMqttSubAck(m, &subAck);
+
+    if (subAck.packetIdentifier != 0xAABB)
+    {
+        printf("Expected packetIdentifier to be 0xAABB but was 0x%X\n", subAck.packetIdentifier);
+        failedAssertions++;
+    }
+
+    if (subAck.returnCode != 0x02)
+    {
+        printf("Expected returnCode to be 0x02 but was 0x%X\n", subAck.returnCode);
+        failedAssertions++;
+    }
+}
+
+static uint16_t itShouldUnpackASubAckPacket()
+{
+    printf("It should unpack a SUBACK packet\n");
+    failedAssertions = 0;
+    callbackCounter = 0;
+
+    uint8_t bytes[] = { 0x90, 0x03, 0xAA, 0xBB, 0x02 };
+    struct MqttPacket m = { .bytes = bytes };
+
+    currentSize = 5;
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 5, itShouldUnpackASubAckPacketCallback);
 
     if (callbackCounter != 1)
     {

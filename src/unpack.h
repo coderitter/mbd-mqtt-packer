@@ -26,5 +26,7 @@ int32_t unpackMqttChunk
 
 void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdentifier);
 void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket);
+void unpackMqttConnAck(struct MqttPacket *packet, struct MqttConnAckPacket *connAckPacket);
+void unpackMqttSubAck(struct MqttPacket *packet, struct MqttSubAckPacket *subAckPacket);
 
 #endif 

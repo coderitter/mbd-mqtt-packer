@@ -73,37 +73,35 @@
  */
 #define MQTT_PACKET_DISCONNECT 0x0E
 
-#define MQTT_CONNACK_VARIABLE_HEADER_FLAGS_SESSION_PRESENT 0x01
-
 /**
  * @brief Connection accepted
  */
-#define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_ACCEPTED 0x00
+#define MQTT_CONNACK_RETURN_CODE_ACCEPTED 0x00
 
 /**
  * @brief The Server does not support the level of the MQTT protocol requested by the Client
  */
-#define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_UNACCEPTABLE_PROTOCOL_VERSION 0x01
+#define MQTT_CONNACK_RETURN_CODE_UNACCEPTABLE_PROTOCOL_VERSION 0x01
 
 /**
  * @brief The Client identifier is correct UTF-8 but not allowed by the Server
  */
-#define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_IDENTIFIER_REJECTED 0x02
+#define MQTT_CONNACK_RETURN_CODE_IDENTIFIER_REJECTED 0x02
 
 /**
  * @brief The Network Connection has been made but the MQTT service is unavailable
  */
-#define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_SERVER_UNAVAILABLE 0x03
+#define MQTT_CONNACK_RETURN_CODE_SERVER_UNAVAILABLE 0x03
 
 /**
  * @brief The data in the user name or password is malformed
  */
-#define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_BAD_USER_NAME_OR_PASSWORD 0x04
+#define MQTT_CONNACK_RETURN_CODE_BAD_USER_NAME_OR_PASSWORD 0x04
 
 /**
  * @brief The Client is not authorized to connect
  */
-#define MQTT_CONNACK_VARIABLE_HEADER_RETURN_CODE_BAD_NOT_AUTHORIZED 0x05
+#define MQTT_CONNACK_RETURN_CODE_BAD_NOT_AUTHORIZED 0x05
 
 #define MQTT_QOS_AT_MOST_ONCE 0x00
 #define MQTT_QOS_AT_LEAST_ONCE 0x01
@@ -283,6 +281,38 @@ struct MqttConnectPacket
     uint16_t keepAlive;
 };
 
+struct MqttConnAckPacket
+{
+    /**
+     * @brief The Session Present flag enables a Client to establish whether the Client and Server have a consistent view about whether there is already stored Session state. 
+     * 
+     * Once the initial setup of a Session is complete, a Client with stored Session state will expect the Server to maintain its stored Session state.
+     * In the event that the value of Session Present received by the Client from the Server is not as expected, the Client can choose whether to proceed with the Session or to disconnect.
+     * The Client can discard the Session state on both Client and Server by disconnecting, connecting with Clean Session set to 1 and then disconnecting again. 
+     * 
+     * [MQTT-3.2.2-1] If the Server accepts a connection with CleanSession set to 1, the Server MUST set Session Present to 0 in the CONNACK packet in addition to setting a zero return code in the CONNACK packet.
+     * [MQTT-3.2.2-2] If the Server accepts a connection with CleanSession set to 0, the value set in Session Present depends on whether the Server already has stored Session state for the supplied client ID. If the Server has stored Session state, it MUST set Session Present to 1 in the CONNACK packet.
+     * [MQTT-3.2.2-3] If the Server does not have stored Session state, it MUST set Session Present to 0 in the CONNACK packet. This is in addition to setting a zero return code in the CONNACK packet.
+     * [MQTT-3.2.2-4] If a server sends a CONNACK packet containing a non-zero return code it MUST set Session Present to 0.
+     */
+    uint8_t sessionPresent;
+
+    /**
+     * @brief If a well formed CONNECT Packet is received by the Server, but the Server is unable to process it for some reason, then the Server SHOULD attempt to send a CONNACK packet containing the appropriate non-zero Connect return code.
+     * 
+     * - MQTT_CONNACK_RETURN_CODE_ACCEPTED
+     * - MQTT_CONNACK_RETURN_CODE_UNACCEPTABLE_PROTOCOL_VERSION
+     * - MQTT_CONNACK_RETURN_CODE_IDENTIFIER_REJECTED
+     * - MQTT_CONNACK_RETURN_CODE_SERVER_UNAVAILABLE
+     * - MQTT_CONNACK_RETURN_CODE_BAD_USER_NAME_OR_PASSWORD
+     * - MQTT_CONNACK_RETURN_CODE_BAD_NOT_AUTHORIZED
+     * 
+     * [MQTT-3.2.2-5] If a server sends a CONNACK packet containing a non-zero return code it MUST then close the Network Connection.
+     * [MQTT-3.2.2-6] If none of the defined return code values are deemed applicable, then the Server MUST close the Network Connection without sending a CONNACK.
+     */
+    uint8_t returnCode;
+};
+
 /**
  * @brief The parameter for the Control Packet type PUBLISH.
  */
@@ -403,6 +433,24 @@ struct MqttUnSubscribePacket
      * [MQTT-3.8.4-6] The Server might grant a lower maximum QoS than the subscriber requested. The QoS of Payload Messages sent in response to a Subscription MUST be the minimum of the QoS of the originally published message and the maximum QoS granted by the Server. The server is permitted to send duplicate copies of a message to a subscriber in the case where the original message was published with QoS 1 and the maximum QoS granted was QoS 0.
      */
     uint8_t qos;
+};
+
+struct MqttSubAckPacket
+{
+    /**
+     * @brief The variable header contains the Packet Identifier from the SUBSCRIBE Packet that is being acknowledged.
+     * 
+     * [MQTT-3.8.4-2] The SUBACK Packet MUST have the same Packet Identifier as the SUBSCRIBE Packet that it is acknowledging.
+     */
+    uint16_t packetIdentifier;
+
+    /**
+     * @brief The payload contains a list of return codes. Each return code corresponds to a Topic Filter in the SUBSCRIBE Packet being acknowledged.
+     * 
+     * [MQTT-3.9.3-1] The order of return codes in the SUBACK Packet MUST match the order of Topic Filters in the SUBSCRIBE Packet.
+     * [MQTT-3.9.3-2] SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used.
+     */
+    uint8_t returnCode;
 };
 
 #endif
