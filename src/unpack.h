@@ -5,7 +5,7 @@
 #include "defines.h"
 
 /**
- * @brief Decodes MQTT messages out of a stream of bytes which arrives in chunks.
+ * @brief Unpacks MQTT packets out of a stream of bytes which arrives in chunks.
  * 
  * This function gets the MqttPacket struct which contains a byte buffer which needs to be large
  * enough so that it can hold all the bytes of the MQTT packet currently decoded.
@@ -14,7 +14,7 @@
  * @param currentSize The current number of bytes in the MQTT packet.
  * @param chunkSize The size of the last added chunk.
  * @param onMqttPacketComplete A pointer to a function which is called as soon as an MQTT packet is complete.
- * @return int32_t The size of the MQTT packet which is currently decoded.
+ * @return int32_t The size of the MQTT packet which is currently unpacked.
  */
 int32_t unpackMqttChunk
 (
