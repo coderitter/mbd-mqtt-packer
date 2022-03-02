@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "../include/mqtt_packer.h"
 
-int32_t currentSize = 0;
+uint32_t currentSize = 0;
 uint16_t failedAssertions = 0;
 uint8_t callbackCounter = 0;
 
@@ -51,7 +51,7 @@ static uint16_t itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSize()
     struct MqttPacket m = { .bytes = bytes };
 
     currentSize = 2;
-    uint32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 2, itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback, 0);
+    uint32_t packetSize = unpackMqttChunk(&m, &currentSize, 2, itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSizeCallback, 0);
 
     if (callbackCounter != 1)
     {

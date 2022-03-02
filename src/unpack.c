@@ -5,8 +5,8 @@
 int32_t unpackMqttChunk
 (
     struct MqttPacket *packet, 
-    int32_t *currentSize, 
-    int32_t chunkSize,
+    uint32_t *currentSize, 
+    uint32_t chunkSize,
     void (*onMqttPacketComplete) (struct MqttPacket *packet, void *extraData),
     void *onMqttPacketCompleteExtraData
 )

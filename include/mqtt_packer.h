@@ -627,8 +627,8 @@ uint32_t packMqttDisconnect(uint8_t *bytes);
 int32_t unpackMqttChunk
 (
     struct MqttPacket *mqttMessage, 
-    int32_t *currentSize,
-    int32_t chunkSize,
+    uint32_t *currentSize,
+    uint32_t chunkSize,
     void (*onMqttPacketComplete) (struct MqttPacket *mqttMessage, void *extraData),
     void *onMqttPacketCompleteExtraData
 );
