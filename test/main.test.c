@@ -181,6 +181,7 @@ int main()
     failedAssertions += itShouldUnpackWithA5ByteHeader();
     failedAssertions += itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks();
     failedAssertions += itShouldMoveTheBytesOfANewPacketToTheBeginning();
+    failedAssertions += itShouldUnpackMultiplePackets();
 
     printf("\n");
     printf("unpackMqttPacketIdentifier\n");

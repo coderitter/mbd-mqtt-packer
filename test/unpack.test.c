@@ -580,6 +580,123 @@ static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
     return failedAssertions;
 }
 
+void itShouldUnpackMultiplePacketsCallback(struct MqttPacket *m, void *extraData)
+{
+    callbackCounter++;
+
+    if (callbackCounter == 1)
+    {
+        if (m->size != 2)
+        {
+            printf("Callback 1: Expected size to be 2 but was %i\n", m->size);
+            failedAssertions++;
+        }
+
+        if (m->fixedHeaderSize != 2)
+        {
+            printf("Callback 1: Expected fixedHeaderSize to be 2 but was %i\n", m->fixedHeaderSize);
+            failedAssertions++;
+        }
+        
+        if (m->type != 0x0C)
+        {
+            printf("Callback 1: Expected type to be 0x0C but was 0x%X\n", m->type);
+            failedAssertions++;
+        }
+            
+        if (m->remainingSize != 0)
+        {
+            printf("Callback 1: Expected remainingSize to be 0 but was %i\n", m->remainingSize);
+            failedAssertions++;
+        }
+    }
+
+    if (callbackCounter == 2)
+    {
+        if (m->size != 2)
+        {
+            printf("Callback 2: Expected size to be 2 but was %i\n", m->size);
+            failedAssertions++;
+        }
+
+        if (m->fixedHeaderSize != 2)
+        {
+            printf("Callback 2: Expected fixedHeaderSize to be 2 but was %i\n", m->fixedHeaderSize);
+            failedAssertions++;
+        }
+        
+        if (m->type != 0x0D)
+        {
+            printf("Callback 2: Expected type to be 0x0D but was 0x%X\n", m->type);
+            failedAssertions++;
+        }
+            
+        if (m->remainingSize != 0)
+        {
+            printf("Callback 2: Expected remainingSize to be 0 but was %i\n", m->remainingSize);
+            failedAssertions++;
+        }
+    }
+}
+
+static uint16_t itShouldUnpackMultiplePackets()
+{
+    printf("It should unpack multiple packets\n");
+    failedAssertions = 0;
+    callbackCounter = 0;
+
+    uint8_t bytes[] = { 0xC0, 0x00, 0xD0, 0x00, 0x40, 0x02, 0xAA };
+    struct MqttPacket m = { .bytes = bytes };
+
+    currentSize = 7;
+    int32_t packetSize = unpackMqttChunk(&m, &currentSize, (int32_t) 7, itShouldUnpackMultiplePacketsCallback, 0);
+
+    if (callbackCounter != 2)
+    {
+        printf("Expected callbackCounter to be 2 but was %i\n", callbackCounter);
+        failedAssertions++;
+    }
+    
+    if (currentSize != 3)
+    {
+        printf("Expected currentSize to be 0 but was %i\n", currentSize);
+        failedAssertions++;
+    }
+
+    if (packetSize != 4)
+    {
+        printf("Expected packetSize to be 0 but was %i\n", packetSize);
+        failedAssertions++;
+    }
+
+    if (m.size != 3)
+    {
+        printf("Expected size to be 3 but was %i\n", m.size);
+        failedAssertions++;
+    }
+
+    if (m.fixedHeaderSize != 2)
+    {
+        printf("Expected fixedHeaderSize to be 2 but was %i\n", m.fixedHeaderSize);
+        failedAssertions++;
+    }
+    
+    if (m.type != 0x04)
+    {
+        printf("Expected type to be 0x04 but was 0x%X\n", m.type);
+        failedAssertions++;
+    }
+        
+    if (m.remainingSize != 2)
+    {
+        printf("Expected remainingSize to be 2 but was %i\n", m.remainingSize);
+        failedAssertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failedAssertions);
+    return failedAssertions;
+}
+
 void itShouldMoveTheBytesOfANewPacketToTheBeginningCallback(struct MqttPacket *m, void *extraData)
 {
     callbackCounter++;
