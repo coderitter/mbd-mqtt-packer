@@ -114,12 +114,7 @@
 struct MqttPacket
 {
     /**
-     * @brief The content of the MQTT packet
-     */
-    uint8_t *bytes;
-
-    /**
-     * @brief The size of the MQTT packet
+     * @brief The size of the MQTT packet which is the sum of fixedHeaderSize and remainingSize
      */
     uint32_t size;
 
@@ -622,20 +617,18 @@ uint32_t packMqttDisconnect(uint8_t *bytes);
  * @param currentSize The current number of bytes in the MQTT packet.
  * @param chunkSize The size of the last added chunk.
  * @param onMqttPacketComplete A pointer to a function which is called as soon as an MQTT packet is complete.
- * @return int32_t The size of the MQTT packet which is currently unpacked.
+ * @return uint32_t The size of the MQTT packet which is currently unpacked.
  */
-int32_t unpackMqttChunk
+void unpackMqttPacket
 (
-    struct MqttPacket *mqttMessage, 
-    uint32_t *currentSize,
-    uint32_t chunkSize,
-    void (*onMqttPacketComplete) (struct MqttPacket *mqttMessage, void *extraData),
-    void *onMqttPacketCompleteExtraData
+    uint8_t *bytes,
+    uint32_t size,
+    struct MqttPacket *packet
 );
 
-void unpackMqttPacketIdentifier(struct MqttPacket *packet, uint16_t *packetIdentifier);
-void unpackMqttPublish(struct MqttPacket *packet, struct MqttPublishPacket *publishPacket);
-void unpackMqttConnAck(struct MqttPacket *packet, struct MqttConnAckPacket *connAckPacket);
-void unpackMqttSubAck(struct MqttPacket *packet, struct MqttSubAckPacket *subAckPacket);
+void unpackMqttPacketIdentifier(uint8_t *bytes, struct MqttPacket *packet, uint16_t *packetIdentifier);
+void unpackMqttPublish(uint8_t *bytes, struct MqttPacket *packet, struct MqttPublishPacket *publishPacket);
+void unpackMqttConnAck(uint8_t *bytes, struct MqttPacket *packet, struct MqttConnAckPacket *connAckPacket);
+void unpackMqttSubAck(uint8_t *bytes, struct MqttPacket *packet, struct MqttSubAckPacket *subAckPacket);
 
 #endif
