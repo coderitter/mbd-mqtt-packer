@@ -139,7 +139,7 @@ uint32_t getMqttDisconnectSize()
     return 2;
 }
 
-uint8_t packMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes)
+uint8_t packMqttRemainingLength(uint8_t *bytes, uint32_t remainingLength)
 {
     uint8_t size = 0;
 
@@ -208,7 +208,7 @@ uint8_t packMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes)
  * @param packet 
  * @param bytes 
  */
-uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes)
+uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
 {
     uint32_t size = 0;
 
@@ -243,7 +243,7 @@ uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes)
     // Password
     remainingLength += packet->passwordSize ? 2 + packet->passwordSize : 0;
 
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Protocol name
@@ -444,7 +444,7 @@ uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes)
     return size;
 }
 
-uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes)
+uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet)
 {
     uint32_t size = 0;
 
@@ -486,7 +486,7 @@ uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes)
     // Payload
     remainingLength += packet->payloadSize;
 
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Topic name
@@ -531,7 +531,7 @@ uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes)
     return size;
 }
 
-uint32_t packMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes)
+uint32_t packMqttPubAck(uint8_t *bytes, uint16_t packetIdentifier)
 {
     uint32_t size = 0;
 
@@ -548,7 +548,7 @@ uint32_t packMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes)
 
     // Variable header
     uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Packet Identifier
@@ -563,7 +563,7 @@ uint32_t packMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes)
     return size;
 }
 
-uint32_t packMqttPubRec(uint16_t packetIdentifier, uint8_t *bytes)
+uint32_t packMqttPubRec(uint8_t *bytes, uint16_t packetIdentifier)
 {
     uint32_t size = 0;
 
@@ -580,7 +580,7 @@ uint32_t packMqttPubRec(uint16_t packetIdentifier, uint8_t *bytes)
 
     // Variable header
     uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Packet Identifier
@@ -595,7 +595,7 @@ uint32_t packMqttPubRec(uint16_t packetIdentifier, uint8_t *bytes)
     return size;
 }
 
-uint32_t packMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes)
+uint32_t packMqttPubRel(uint8_t *bytes, uint16_t packetIdentifier)
 {
     uint32_t size = 0;
 
@@ -612,7 +612,7 @@ uint32_t packMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes)
 
     // Variable header
     uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Packet Identifier
@@ -627,7 +627,7 @@ uint32_t packMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes)
     return size;
 }
 
-uint32_t packMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes)
+uint32_t packMqttPubComp(uint8_t *bytes, uint16_t packetIdentifier)
 {
     uint32_t size = 0;
 
@@ -644,7 +644,7 @@ uint32_t packMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes)
 
     // Variable header
     uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Packet Identifier
@@ -660,7 +660,7 @@ uint32_t packMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes)
 }
 
 
-uint32_t packMqttSubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes)
+uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
 {
     uint32_t size = 0;
 
@@ -683,7 +683,7 @@ uint32_t packMqttSubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes)
     // Topic filter + QoS length
     remainingLength += 2 + packet->topicFilterSize + 1;
 
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Packet Identifier
@@ -725,7 +725,7 @@ uint32_t packMqttSubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes)
     return size;
 }
 
-uint32_t packMqttUnsubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes)
+uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
 {
     uint32_t size = 0;
 
@@ -746,7 +746,7 @@ uint32_t packMqttUnsubscribe(struct MqttUnSubscribePacket *packet, uint8_t *byte
     // Topic filter
     remainingLength += 2 + packet->topicFilterSize;
 
-    size += packMqttRemainingLength(remainingLength, &(bytes[size]));
+    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
 
     /**
      * Variable header - Packet Identifier

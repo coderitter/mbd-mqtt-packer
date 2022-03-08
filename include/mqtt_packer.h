@@ -470,7 +470,7 @@ uint32_t getMqttDisconnectSize();
  * @param bytes A pointer to an array which needs to have up to 4 upcoming bytes
  * @return uint8_t Size of the resulting remaining length bytes
  */
-uint8_t packMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes);
+uint8_t packMqttRemainingLength(uint8_t *bytes, uint32_t remainingLength);
 
 /**
  * @brief Packs an MQTT CONNECT packet into a given byte array.
@@ -482,7 +482,7 @@ uint8_t packMqttRemainingLength(uint32_t remainingLength, uint8_t *bytes);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes);
+uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet);
 
 /**
  * @brief Packs an MQTT PUBLISH packet into a given byte array.
@@ -501,7 +501,7 @@ uint32_t packMqttConnect(struct MqttConnectPacket *packet, uint8_t *bytes);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes);
+uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet);
 
 /**
  * @brief Packs an MQTT PUBACK packet into a given byte array.
@@ -512,7 +512,7 @@ uint32_t packMqttPublish(struct MqttPublishPacket *packet, uint8_t *bytes);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes);
+uint32_t packMqttPubAck(uint8_t *bytes, uint16_t packetIdentifier);
 
 /**
  * @brief Packs an MQTT PUBREC packet into a given byte array.
@@ -523,7 +523,7 @@ uint32_t packMqttPubAck(uint16_t packetIdentifier, uint8_t *bytes);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubRec(uint16_t packetIdentifier, uint8_t *bytes);
+uint32_t packMqttPubRec(uint8_t *bytes, uint16_t packetIdentifier);
 
 /**
  * @brief Packs an MQTT PUBREL packet into a given byte array.
@@ -534,7 +534,7 @@ uint32_t packMqttPubRec(uint16_t packetIdentifier, uint8_t *bytes);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes);
+uint32_t packMqttPubRel(uint8_t *bytes, uint16_t packetIdentifier);
 
 /**
  * @brief Packs an MQTT PUBCOMP packet into a given byte array.
@@ -545,7 +545,7 @@ uint32_t packMqttPubRel(uint16_t packetIdentifier, uint8_t *bytes);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes);
+uint32_t packMqttPubComp(uint8_t *bytes, uint16_t packetIdentifier);
 
 /**
  * @brief Packs an MQTT SUBSCRIBE packet into a given byte array.
@@ -564,7 +564,7 @@ uint32_t packMqttPubComp(uint16_t packetIdentifier, uint8_t *bytes);
  * @param packet 
  * @param bytes 
  */
-uint32_t packMqttSubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes);
+uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet);
 
 /**
  * @brief Packs an MQTT UNSUBSCRIBE packet into a given byte array.
@@ -583,7 +583,7 @@ uint32_t packMqttSubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes)
  * 
  * @return uint32_t 
  */
-uint32_t packMqttUnsubscribe(struct MqttUnSubscribePacket *packet, uint8_t *bytes);
+uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet);
 
 /**
  * @brief Packs an MQTT PINGREQ packet into a given byte array.
