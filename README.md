@@ -1,45 +1,30 @@
 # C MQTT packer by Coderitter
 
-A packer for MQTT written in plain C99. It packs und unpacks MQTT to and from byte arrays. Its only dependencies are `memcpy` and `memmove` from `string.h`. It does not provide the flow of the protocol, neither for the client nor for the server, but it can be used to create client and server implementations.
+A packer for MQTT written in plain C99. It packs und unpacks MQTT to and from byte arrays. It has no dependencies. It also does not provide the flow of the protocol, neither for the client nor for the server, but it can be used to create client and server implementations.
 
 This library enables you to optimize an MQTT implementation specifically to the plattform that you are using, even to the specific needs of your IoT application. The microcontroller might offer only a limited amount of resources and therefor you only want to connect to an MQTT broker and send PUBLISH packets.
 
 ## Quick start
 
-Let your byte stream function fill the `mqttPacketBytes` array chunk by chunk, keep track of the total size and note the size of the just received chunk.
-
 ```c
-#define MQTT_MAX_PACKET_SIZE 10 * 1024
-uint8_t mqttPacketBytes[MQTT_MAX_PACKET_SIZE];
+uint8_t receivedMqttBytes[100];
+uint32_t size;
+size = tcpReceive(receivedMqttBytes);
 
-uint32_t currentSize = 0;
-uint32_t chunkSize = tcpReceiveChunk(mqttPacketBytes);
-currentSize += chunkSize;
-```
+struct MqttPacket mqttPacket;
+unpackMqttPacket(receivedMqttBytes, size, &mqttPacket);
 
-Create an MQTT packet struct `mqttPacket` and define a callback function `onMqttPacketComplete` which will get called by `unpackMqttChunk` as soon as an MQTT packet was fully received.
-
-```c
-struct MqttPacket mqttPacket = 
+if (mqttPacket.type == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
 {
-    .bytes = mqttPacketBytes
-};
-
-void onMqttPacketComplete(struct MqttPacket *packet)
-{
-    if (packet->type == MQTT_CONTROL_PACKET_TYPE_PUBLISH)
-    {
-        struct MqttPublishPacket publish;
-        unpackMqttPublish(packet, publish);
-        
-        uint8_t pubAckBytes[getMqttPubAckSize()];
-        packMqttPubAck(publish.packetIdentifier, pubAckBytes);
-        
-        tcpSend(pubAckBytes);
-    }
-};
-
-unpackMqttChunk(&mqttPacket, currentSize, chunkSize, onMqttPacketComplete);
+    struct MqttPublishPacket publish;
+    unpackMqttPublish(receivedMqttBytes, &packet, &publish);
+    
+    uint32_t pubAckSize = getMqttPubAckSize();
+    uint8_t pubAckBytes[pubAckSize];
+    packMqttPubAck(pubAckBytes, publish.packetIdentifier);
+    
+    tcpSend(pubAckBytes, pubAckSize);
+}
 ```
 
 ## Installation
