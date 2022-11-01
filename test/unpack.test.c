@@ -1,519 +1,519 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../include/mqtt_packer.h"
+#include <mqtt_packer.h>    
 
-uint16_t failedAssertions = 0;
+uint16_t failed_assertions = 0;
 
-static uint16_t itShouldUnpackWithA2ByteHeaderAndAZeroLengthRemainingSize()
+static uint16_t it_should_unpack_with_a_2_byte_header_and_a_zero_length_remaining_size()
 {
     printf("It should unpack with a 2 byte header and a zero length remaining size\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[10] = { 0x30, 0x00 };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 2, &packet);
+    unpack_mqtt_packet(bytes, 2, &packet);
 
     if (packet.size != 2)
     {
         printf("Callback: Expected size to be 2 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 2)
+    if (packet.fixed_header_size != 2)
     {
-        printf("Callback: Expected fixedHeaderSize to be 2 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Callback: Expected fixed_header_size to be 2 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Callback: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
         
-    if (packet.remainingSize != 0)
+    if (packet.remaining_size != 0)
     {
-        printf("Callback: Expected remainingSize to be 0 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Callback: Expected remaining_size to be 0 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackWithA2ByteHeader()
+static uint16_t it_should_unpack_with_a_2_byte_header()
 {
     printf("It should unpack with a 2 byte header\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[10] = { 0x30, 0x01, 0xFF };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 3, &packet);
+    unpack_mqtt_packet(bytes, 3, &packet);
 
     if (packet.size != 3)
     {
         printf("Callback: Expected size to be 3 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 2)
+    if (packet.fixed_header_size != 2)
     {
-        printf("Callback: Expected fixedHeaderSize to be 2 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Callback: Expected fixed_header_size to be 2 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Callback: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 1)
+    if (packet.remaining_size != 1)
     {
-        printf("Callback: Expected remainingSize to be 1 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Callback: Expected remaining_size to be 1 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackWithA3ByteHeader()
+static uint16_t it_should_unpack_with_a_3_byte_header()
 {
     printf("It should unpack with a 3 byte header\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[10] = { 0x30, 0x81, 0x02, 0xFF };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 4, &packet);
+    unpack_mqtt_packet(bytes, 4, &packet);
 
     if (packet.size != 260)
     {
         printf("Expected size to be 260 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 3)
+    if (packet.fixed_header_size != 3)
     {
-        printf("Expected fixedHeaderSize to be 3 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Expected fixed_header_size to be 3 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 257)
+    if (packet.remaining_size != 257)
     {
-        printf("Expected remainingSize to be 257 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Expected remaining_size to be 257 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackWithA4ByteHeader()
+static uint16_t it_should_unpack_with_a_4_byte_header()
 {
     printf("It should unpack with a 4 byte header\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[10] = { 0x30, 0x81, 0x82, 0x03, 0xFF };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 5, &packet);
+    unpack_mqtt_packet(bytes, 5, &packet);
 
     if (packet.size != 49413)
     {
         printf("Expected size to be 49413 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 4)
+    if (packet.fixed_header_size != 4)
     {
-        printf("Expected fixedHeaderSize to be 4 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Expected fixed_header_size to be 4 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 49409)
+    if (packet.remaining_size != 49409)
     {
-        printf("Expected remainingSize to be 49409 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Expected remaining_size to be 49409 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackWithA5ByteHeader()
+static uint16_t it_should_unpack_with_a_5_byte_header()
 {
     printf("It should unpack with a 5 byte header\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[10] = { 0x30, 0x81, 0x82, 0x83, 0x04, 0xFF };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 6, &packet);
+    unpack_mqtt_packet(bytes, 6, &packet);
 
     if (packet.size != 8438022)
     {
         printf("Expected size to be 8438022 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 5)
+    if (packet.fixed_header_size != 5)
     {
-        printf("Expected fixedHeaderSize to be 5 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Expected fixed_header_size to be 5 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 8438017)
+    if (packet.remaining_size != 8438017)
     {
-        printf("Expected remainingSize to be 8438017 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Expected remaining_size to be 8438017 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackWithA5ByteHeaderGivenThrough1ByteChunks()
+static uint16_t it_should_unpack_with_a_5_byte_header_given_through_1_byte_chunks()
 {
     printf("It should unpack with a 5 byte header given through 1 byte chunks\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[10] = { 0x30, 0x81, 0x82, 0x83, 0x04, 0xFF };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 1, &packet);
+    unpack_mqtt_packet(bytes, 1, &packet);
 
     if (packet.size != 2)
     {
         printf("Byte 1: Expected size to be 2 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 2)
+    if (packet.fixed_header_size != 2)
     {
-        printf("Byte 1: Expected fixedHeaderSize to be 2 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Byte 1: Expected fixed_header_size to be 2 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Byte 1: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 0)
+    if (packet.remaining_size != 0)
     {
-        printf("Byte 1: Expected remainingSize to be 0 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Byte 1: Expected remaining_size to be 0 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    unpackMqttPacket(bytes, 2, &packet);
+    unpack_mqtt_packet(bytes, 2, &packet);
 
     if (packet.size != 4)
     {
         printf("Byte 2: Expected size to be 4 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 3)
+    if (packet.fixed_header_size != 3)
     {
-        printf("Byte 2: Expected fixedHeaderSize to be 3 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Byte 2: Expected fixed_header_size to be 3 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Byte 2: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 1)
+    if (packet.remaining_size != 1)
     {
-        printf("Byte 2: Expected remainingSize to be 1 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Byte 2: Expected remaining_size to be 1 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    unpackMqttPacket(bytes, 3, &packet);
+    unpack_mqtt_packet(bytes, 3, &packet);
 
     if (packet.size != 261)
     {
         printf("Byte 3: Expected size to be 261 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 4)
+    if (packet.fixed_header_size != 4)
     {
-        printf("Byte 3: Expected fixedHeaderSize to be 4 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Byte 3: Expected fixed_header_size to be 4 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Byte 3: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 257)
+    if (packet.remaining_size != 257)
     {
-        printf("Byte 3: Expected remainingSize to be 257 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Byte 3: Expected remaining_size to be 257 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    unpackMqttPacket(bytes, 4, &packet);
+    unpack_mqtt_packet(bytes, 4, &packet);
 
     if (packet.size != 49414)
     {
         printf("Byte 4: Expected size to be 49414 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 5)
+    if (packet.fixed_header_size != 5)
     {
-        printf("Byte 4: Expected fixedHeaderSize to be 5 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Byte 4: Expected fixed_header_size to be 5 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
-    if (packet.remainingSize != 49409)
+    if (packet.remaining_size != 49409)
     {
-        printf("Byte 4: Expected remainingSize to be 49409 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Byte 4: Expected remaining_size to be 49409 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
     if (packet.type != 0x03)
     {
         printf("Byte 4: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    unpackMqttPacket(bytes, 5, &packet);
+    unpack_mqtt_packet(bytes, 5, &packet);
 
     if (packet.size != 8438022)
     {
         printf("Byte 5: Expected size to be 8438022 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 5)
+    if (packet.fixed_header_size != 5)
     {
-        printf("Byte 5: Expected fixedHeaderSize to be 5 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Byte 5: Expected fixed_header_size to be 5 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x03)
     {
         printf("Byte 5: Expected type to be 0x03 but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.remainingSize != 8438017)
+    if (packet.remaining_size != 8438017)
     {
-        printf("Byte 5: Expected remainingSize to be 8438017 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Byte 5: Expected remaining_size to be 8438017 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackOnlyOnePacket()
+static uint16_t it_should_unpack_only_one_packet()
 {
     printf("It should unpack only one packet\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[] = { 0xC0, 0x00, 0xD0, 0x00, 0x40, 0x02, 0xAA };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 7, &packet);
+    unpack_mqtt_packet(bytes, 7, &packet);
 
     if (packet.size != 2)
     {
         printf("Callback 1: Expected size to be 2 but was %i\n", packet.size);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (packet.fixedHeaderSize != 2)
+    if (packet.fixed_header_size != 2)
     {
-        printf("Callback 1: Expected fixedHeaderSize to be 2 but was %i\n", packet.fixedHeaderSize);
-        failedAssertions++;
+        printf("Callback 1: Expected fixed_header_size to be 2 but was %i\n", packet.fixed_header_size);
+        failed_assertions++;
     }
     
     if (packet.type != 0x0C)
     {
         printf("Callback 1: Expected type to be 0x0C but was 0x%X\n", packet.type);
-        failedAssertions++;
+        failed_assertions++;
     }
         
-    if (packet.remainingSize != 0)
+    if (packet.remaining_size != 0)
     {
-        printf("Callback 1: Expected remainingSize to be 0 but was %i\n", packet.remainingSize);
-        failedAssertions++;
+        printf("Callback 1: Expected remaining_size to be 0 but was %i\n", packet.remaining_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackThePacketIdentifierWhichIsAfterTheFixedHeader()
+static uint16_t it_should_unpack_the_packet_identifier_which_is_after_the_fixed_header()
 {
     printf("It should unpack the packet identifier which is after the fixed header\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[] = { 0x40, 0x02, 0xAA, 0xBB };
-    struct MqttPacket packet;
-    unpackMqttPacket(bytes, 4, &packet);
+    mqtt_packet_t packet;
+    unpack_mqtt_packet(bytes, 4, &packet);
 
-    uint16_t packetIdentifier = 0;
-    unpackMqttPacketIdentifier(bytes, &packet, &packetIdentifier);
+    uint16_t packet_identifier = 0;
+    unpack_mqtt_packet_identifier(bytes, &packet, &packet_identifier);
 
-    if (packetIdentifier != 0xAABB)
+    if (packet_identifier != 0xAABB)
     {
-        printf("Expected packetIdentifier to be 0xAABB but was 0x%X\n", packetIdentifier);
-        failedAssertions++;
+        printf("Expected packet_identifier to be 0xAABB but was 0x%X\n", packet_identifier);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackAConnAckPacket()
+static uint16_t it_should_unpack_a_connack_packet()
 {
     printf("It should unpack a CONNACK packet\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[] = { 0x20, 0x02, 0x01, 0x02 };
-    struct MqttPacket packet;
-    unpackMqttPacket(bytes, 4, &packet);
+    mqtt_packet_t packet;
+    unpack_mqtt_packet(bytes, 4, &packet);
 
-    struct MqttConnAckPacket connAck;
-    unpackMqttConnAck(bytes, &packet, &connAck);
+    mqtt_connack_packet_t connack;
+    unpack_mqtt_connack(bytes, &packet, &connack);
 
-    if (connAck.sessionPresent != 1)
+    if (connack.session_present != 1)
     {
-        printf("Expected sessionPresent to be 1 but was %i\n", connAck.sessionPresent);
-        failedAssertions++;
+        printf("Expected session_present to be 1 but was %i\n", connack.session_present);
+        failed_assertions++;
     }
 
-    if (connAck.returnCode != 0x02)
+    if (connack.return_code != 0x02)
     {
-        printf("Expected returnCode to be 0x02 but was 0x%X\n", connAck.returnCode);
-        failedAssertions++;
+        printf("Expected return_code to be 0x02 but was 0x%X\n", connack.return_code);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackAPublishPacket()
+static uint16_t it_should_unpack_a_publish_packet()
 {
     printf("It should unpack a PUBLISH packet\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[] = { 0x3D, 0x0C, 0x00, 0x05, 0x54, 0x4F, 0x50, 0x49, 0x43, 0xAA, 0xBB, 0x00, 0x01, 0x02 };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 14, &packet);
+    unpack_mqtt_packet(bytes, 14, &packet);
 
-    struct MqttPublishPacket publish;
-    unpackMqttPublish(bytes, &packet, &publish);
+    mqtt_publish_packet_t publish;
+    unpack_mqtt_publish(bytes, &packet, &publish);
 
     if (publish.dup != 1)
     {
         printf("Expected dup to be 1 but was %i\n", publish.dup);
-        failedAssertions++;
+        failed_assertions++;
     }
 
     if (publish.qos != MQTT_QOS_EXACTLY_ONCE)
     {
         printf("Expected qos to be 0x02 but was 0x%X\n", publish.qos);
-        failedAssertions++;
+        failed_assertions++;
     }
 
     if (publish.retain != 1)
     {
         printf("Expected retain to be 1 but was %i\n", publish.dup);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (publish.topicName != &(bytes[4]))
+    if (publish.topic_name != &(bytes[4]))
     {
-        printf("Expected topicName to be %p but was %p\n", &(bytes[4]), publish.topicName);
-        failedAssertions++;
+        printf("Expected topic_name to be %p but was %p\n", &(bytes[4]), publish.topic_name);
+        failed_assertions++;
     }
 
-    if (publish.topicNameSize != 5)
+    if (publish.topic_name_size != 5)
     {
-        printf("Expected topicNameSize to be 5 but was %i\n", publish.topicNameSize);
-        failedAssertions++;
+        printf("Expected topic_name_size to be 5 but was %i\n", publish.topic_name_size);
+        failed_assertions++;
     }
 
-    if (publish.packetIdentifier != 0xAABB)
+    if (publish.packet_identifier != 0xAABB)
     {
-        printf("Expected packetIdentifier to be 0xAABB but was 0x%X\n", publish.packetIdentifier);
-        failedAssertions++;
+        printf("Expected packet_identifier to be 0xAABB but was 0x%X\n", publish.packet_identifier);
+        failed_assertions++;
     }
 
     if (publish.payload != &(bytes[11]))
     {
         printf("Expected payload to be %p but was %p\n", &(bytes[11]), publish.payload);
-        failedAssertions++;
+        failed_assertions++;
     }
 
-    if (publish.payloadSize != 3)
+    if (publish.payload_size != 3)
     {
-        printf("Expected payloadSize to be 3 but was %i\n", publish.payloadSize);
-        failedAssertions++;
+        printf("Expected payload_size to be 3 but was %i\n", publish.payload_size);
+        failed_assertions++;
     }
 
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }
 
-static uint16_t itShouldUnpackASubAckPacket()
+static uint16_t it_should_unpack_a_suback_packet()
 {
     printf("It should unpack a SUBACK packet\n");
-    failedAssertions = 0;
+    failed_assertions = 0;
 
     uint8_t bytes[] = { 0x90, 0x03, 0xAA, 0xBB, 0x02 };
-    struct MqttPacket packet;
+    mqtt_packet_t packet;
 
-    unpackMqttPacket(bytes, 5, &packet);
+    unpack_mqtt_packet(bytes, 5, &packet);
 
-    struct MqttSubAckPacket subAck;
-    unpackMqttSubAck(bytes, &packet, &subAck);
+    mqtt_suback_packet_t suback;
+    unpack_mqtt_suback(bytes, &packet, &suback);
 
-    if (subAck.packetIdentifier != 0xAABB)
+    if (suback.packet_identifier != 0xAABB)
     {
-        printf("Expected packetIdentifier to be 0xAABB but was 0x%X\n", subAck.packetIdentifier);
-        failedAssertions++;
+        printf("Expected packet_identifier to be 0xAABB but was 0x%X\n", suback.packet_identifier);
+        failed_assertions++;
     }
 
-    if (subAck.returnCode != 0x02)
+    if (suback.return_code != 0x02)
     {
-        printf("Expected returnCode to be 0x02 but was 0x%X\n", subAck.returnCode);
-        failedAssertions++;
+        printf("Expected return_code to be 0x02 but was 0x%X\n", suback.return_code);
+        failed_assertions++;
     }
     
-    printf("Failed assertions: %i\n\n", failedAssertions);
-    return failedAssertions;
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
 }

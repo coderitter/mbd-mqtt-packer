@@ -111,17 +111,17 @@
 /**
  * @brief Contains the bytes, sizes and pointers regarding an MQTT packet.
  */
-struct MqttPacket
+typedef struct mqtt_packet
 {
     /**
-     * @brief The size of the MQTT packet which is the sum of fixedHeaderSize and remainingSize
+     * @brief The size of the MQTT packet which is the sum of fixed_header_size and remaining_size
      */
     uint32_t size;
 
     /**
      * @brief The size of the fixed header containing the Control Packet type and the remaining length. Can be 2 to 5 bytes.
      */
-    uint16_t fixedHeaderSize;
+    uint16_t fixed_header_size;
 
     /**
      * Use one the following defines to determine the Control Packet type.
@@ -146,10 +146,10 @@ struct MqttPacket
     /**
      * @brief The remaining size which contains the size of the variable header and the payload.
      */
-    uint32_t remainingSize;
-};
+    uint32_t remaining_size;
+} mqtt_packet_t;
 
-struct MqttConnectPacket
+typedef struct mqtt_connect_packet
 {
     /**
      * @brief The Client Identifier (ClientId) identifies the Client to the Server.
@@ -163,12 +163,12 @@ struct MqttConnectPacket
      * [MQTT-3.1.3-8] If the Client supplies a zero-byte ClientId with CleanSession set to 0, the Server MUST respond to the CONNECT Packet with a CONNACK return code 0x02 (Identifier rejected) and then close the Network Connection.
      * [MQTT-3.1.3-9] If the Server rejects the ClientId it MUST respond to the CONNECT Packet with a CONNACK return code 0x02 (Identifier rejected) and then close the Network Connection.
      */
-    uint8_t *clientIdentifier;
+    uint8_t* client_identifier;
 
     /**
      * @brief The size of the Client Identifier
      */
-    uint16_t clientIdentifierSize;
+    uint16_t client_identifier_size;
 
     /**
      * @brief The Client and Server can store Session state to enable reliable messaging to continue across a sequence of Network Connections. This bit is used to control the lifetime of the Session state.
@@ -193,14 +193,14 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-6] If CleanSession is set to 1, the Client and Server MUST discard any previous Session and start a new one. This Session lasts as long as the Network Connection. State data associated with this Session MUST NOT be reused in any subsequent Session.
      * [MQTT-3.1.2.7] Retained messages do not form part of the Session state in the Server, they MUST NOT be deleted when the Session ends.
      */
-    uint8_t cleanSession;
+    uint8_t clean_session;
 
     /**
      * [MQTT-3.1.2-8] If the Will Flag is set to 1 this indicates that, if the Connect request is accepted, a Will Message MUST be stored on the Server and associated with the Network Connection. The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet.
      * [MQTT-3.1.3-10] The Will Topic MUST be a UTF-8 encoded string.
      */
-    uint8_t *willTopic;
-    uint16_t willTopicSize;
+    uint8_t* will_topic;
+    uint16_t will_topic_size;
 
     /**
      * @brief The Will Message defines the Application Message that is to be published to the Will Topic.
@@ -219,8 +219,8 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-11] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload.
      * [MQTT-3.1.2-12] If the Will Flag is set to 0, a Will Message MUST NOT be published when this Network Connection ends.
      */
-    uint8_t *willMessage;
-    uint8_t willMessageSize;
+    uint8_t* will_message;
+    uint8_t will_message_size;
 
     /**
      * @brief Specify the QoS level to be used when publishing the Will Message.
@@ -233,7 +233,7 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-13] If the Will Flag is set to 0, then the Will QoS MUST be set to 0 (0x00).
      * [MQTT-3.1.2-14] If the Will Flag is set to 1, the value of Will QoS can be 0 (0x00), 1 (0x01), or 2 (0x02). It MUST NOT be 3 (0x03).
      */
-    uint8_t willQos;
+    uint8_t will_qos;
 
     /**
      * @brief Specifies if the Will Message is to be Retained when it is published.
@@ -242,7 +242,7 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-16] If the Will Flag is set to 1 and if Will Retain is set to 0, the Server MUST publish the Will Message as a non-retained message.
      * [MQTT-3.1.2-17] If the Will Flag is set to 1 and if Will Retain is set to 1, the Server MUST publish the Will Message as a retained message.
      */
-    uint8_t willRetain;
+    uint8_t will_retain;
 
     /**
      * @brief 
@@ -250,8 +250,8 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-18] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload.
      * [MQTT-3.1.2-19] If the User Name Flag is set to 1, a user name MUST be present in the payload.
      */
-    uint8_t *userName;
-    uint16_t userNameSize;
+    uint8_t* username;
+    uint16_t username_size;
 
     /**
      * @brief 
@@ -260,8 +260,8 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-21] If the Password Flag is set to 1, a password MUST be present in the payload.
      * [MQTT-3.1.2-22] If the User Name Flag is set to 0, the Password Flag MUST be set to 0.
      */
-    uint8_t *password;
-    uint16_t passwordSize;
+    uint8_t* password;
+    uint16_t password_size;
 
     /**
      * @brief The Keep Alive is a time interval measured in seconds. Expressed as a 16-bit word, it is the maximum time interval that is permitted to elapse between the point at which the Client finishes transmitting one Control Packet and the point it starts sending the next.
@@ -273,10 +273,10 @@ struct MqttConnectPacket
      * [MQTT-3.1.2-23] It is the responsibility of the Client to ensure that the interval between Control Packets being sent does not exceed the Keep Alive value. In the absence of sending any other Control Packets, the Client MUST send a PINGREQ Packet.
      * [MQTT-3.1.2-24] If the Keep Alive value is non-zero and the Server does not receive a Control Packet from the Client within one and a half times the Keep Alive time period, it MUST disconnect the Network Connection to the Client as if the network had failed.
      */
-    uint16_t keepAlive;
-};
+    uint16_t keep_alive;
+} mqtt_connect_packet_t;
 
-struct MqttConnAckPacket
+typedef struct mqtt_connack_packet
 {
     /**
      * @brief The Session Present flag enables a Client to establish whether the Client and Server have a consistent view about whether there is already stored Session state. 
@@ -290,7 +290,7 @@ struct MqttConnAckPacket
      * [MQTT-3.2.2-3] If the Server does not have stored Session state, it MUST set Session Present to 0 in the CONNACK packet. This is in addition to setting a zero return code in the CONNACK packet.
      * [MQTT-3.2.2-4] If a server sends a CONNACK packet containing a non-zero return code it MUST set Session Present to 0.
      */
-    uint8_t sessionPresent;
+    uint8_t session_present;
 
     /**
      * @brief If a well formed CONNECT Packet is received by the Server, but the Server is unable to process it for some reason, then the Server SHOULD attempt to send a CONNACK packet containing the appropriate non-zero Connect return code.
@@ -305,13 +305,13 @@ struct MqttConnAckPacket
      * [MQTT-3.2.2-5] If a server sends a CONNACK packet containing a non-zero return code it MUST then close the Network Connection.
      * [MQTT-3.2.2-6] If none of the defined return code values are deemed applicable, then the Server MUST close the Network Connection without sending a CONNACK.
      */
-    uint8_t returnCode;
-};
+    uint8_t return_code;
+} mqtt_connack_packet_t;
 
 /**
  * @brief The parameter for the Control Packet type PUBLISH.
  */
-struct MqttPublishPacket
+typedef struct mqtt_publish_packet
 {
     /**
      * @brief The variable header component of many of the Control Packet types includes a 2 byte Packet Identifier field. These Control Packets are PUBLISH (where QoS > 0), PUBACK, PUBREC, PUBREL, PUBCOMP, SUBSCRIBE, SUBACK, UNSUBSCRIBE, UNSUBACK.
@@ -326,7 +326,7 @@ struct MqttPublishPacket
      * [MQTT-2.3.1-7] A PUBACK, PUBREC or PUBREL Packet MUST contain the same Packet Identifier as the PUBLISH Packet that was originally sent [MQTT-2.3.1-6]. Similarly SUBACK and UNSUBACK MUST contain the Packet Identifier that was used in the corresponding SUBSCRIBE and UNSUBSCRIBE Packet respectively.
      * [MQTT-3.8.4-2] The SUBACK Packet MUST have the same Packet Identifier as the SUBSCRIBE Packet that it is acknowledging.
      */
-    uint16_t packetIdentifier;
+    uint16_t packet_identifier;
 
     /**
      * @brief If the DUP flag is set to 0, it indicates that this is the first occasion that the Client or Server has attempted to send this MQTT PUBLISH Packet. If the DUP flag is set to 1, it indicates that this might be re-delivery of an earlier attempt to send the Packet.
@@ -372,8 +372,8 @@ struct MqttPublishPacket
      * [MQTT-3.3.2-2] The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters.
      * [MQTT-3.3.2-3] The Topic Name in a PUBLISH Packet sent by a Server to a subscribing Client MUST match the Subscription’s Topic Filter according to the matching process.
      */
-    uint8_t *topicName;
-    uint16_t topicNameSize;
+    uint8_t* topic_name;
+    uint16_t topic_name_size;
 
     /**
      * @brief The Payload contains the Application Message that is being published.
@@ -382,14 +382,14 @@ struct MqttPublishPacket
      * The length of the payload can be calculated by subtracting the length of the variable header from the Remaining Length field that is in the Fixed Header.
      * It is valid for a PUBLISH Packet to contain a zero length payload.
      */
-    uint8_t *payload;
-    uint32_t payloadSize;
-};
+    uint8_t* payload;
+    uint32_t payload_size;
+} mqtt_publish_packet_t;
 
 /**
  * @brief The parameter for the Control Packet types SUBSCRIBE and UNSUBSCRIBE.
  */
-struct MqttUnSubscribePacket
+typedef struct mqtt_un_subscribe_packet
 {
     /**
      * @brief The variable header component of many of the Control Packet types includes a 2 byte Packet Identifier field. These Control Packets are PUBLISH (where QoS > 0), PUBACK, PUBREC, PUBREL, PUBCOMP, SUBSCRIBE, SUBACK, UNSUBSCRIBE, UNSUBACK.
@@ -402,7 +402,7 @@ struct MqttUnSubscribePacket
      * [MQTT-2.3.1-7] A PUBACK, PUBREC or PUBREL Packet MUST contain the same Packet Identifier as the PUBLISH Packet that was originally sent [MQTT-2.3.1-6]. Similarly SUBACK and UNSUBACK MUST contain the Packet Identifier that was used in the corresponding SUBSCRIBE and UNSUBSCRIBE Packet respectively.
      * [MQTT-3.8.4-2] The SUBACK Packet MUST have the same Packet Identifier as the SUBSCRIBE Packet that it is acknowledging.
      */
-    uint16_t packetIdentifier;
+    uint16_t packet_identifier;
 
     /**
      * @brief The payload of a SUBSCRIBE Packet contains a list of Topic Filters indicating the Topics to which the Client wants to subscribe.
@@ -413,8 +413,8 @@ struct MqttUnSubscribePacket
      * [MQTT-3-8.3-4] The Server MUST treat a SUBSCRIBE packet as malformed and close the Network Connection if any of Reserved bits in the payload are non-zero, or QoS is not 0,1 or 2.
      * [MQTT-3.8.4-3] If a Server receives a SUBSCRIBE Packet containing a Topic Filter that is identical to an existing Subscription’s Topic Filter then it MUST completely replace that existing Subscription with a new Subscription. The Topic Filter in the new Subscription will be identical to that in the previous Subscription, although its maximum QoS value could be different. Any existing retained messages matching the Topic Filter MUST be re-sent, but the flow of publications MUST NOT be interrupted.
      */
-    uint8_t *topicFilter;
-    uint16_t topicFilterSize;
+    uint8_t* topic_filter;
+    uint16_t topic_filter_size;
 
     /**
      * @brief 
@@ -428,16 +428,16 @@ struct MqttUnSubscribePacket
      * [MQTT-3.8.4-6] The Server might grant a lower maximum QoS than the subscriber requested. The QoS of Payload Messages sent in response to a Subscription MUST be the minimum of the QoS of the originally published message and the maximum QoS granted by the Server. The server is permitted to send duplicate copies of a message to a subscriber in the case where the original message was published with QoS 1 and the maximum QoS granted was QoS 0.
      */
     uint8_t qos;
-};
+} mqtt_un_subscribe_packet_t;
 
-struct MqttSubAckPacket
+typedef struct mqtt_suback_packet
 {
     /**
      * @brief The variable header contains the Packet Identifier from the SUBSCRIBE Packet that is being acknowledged.
      * 
      * [MQTT-3.8.4-2] The SUBACK Packet MUST have the same Packet Identifier as the SUBSCRIBE Packet that it is acknowledging.
      */
-    uint16_t packetIdentifier;
+    uint16_t packet_identifier;
 
     /**
      * @brief The payload contains a list of return codes. Each return code corresponds to a Topic Filter in the SUBSCRIBE Packet being acknowledged.
@@ -445,20 +445,20 @@ struct MqttSubAckPacket
      * [MQTT-3.9.3-1] The order of return codes in the SUBACK Packet MUST match the order of Topic Filters in the SUBSCRIBE Packet.
      * [MQTT-3.9.3-2] SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used.
      */
-    uint8_t returnCode;
-};
+    uint8_t return_code;
+} mqtt_suback_packet_t;
 
-uint8_t getMqttRemainingLengthSize(uint32_t remainingLength);
-uint32_t getMqttConnectSize(struct MqttConnectPacket *packet);
-uint32_t getMqttPublishSize(struct MqttPublishPacket *packet);
-uint32_t getMqttPubAckSize();
-uint32_t getMqttPubRecSize();
-uint32_t getMqttPubRelSize();
-uint32_t getMqttPubCompSize();
-uint32_t getMqttSubscribeSize(struct MqttUnSubscribePacket *packet);
-uint32_t getMqttUnsubscribeSize(struct MqttUnSubscribePacket *packet);
-uint32_t getMqttPingReqSize();
-uint32_t getMqttDisconnectSize();
+uint8_t get_mqtt_remaining_length_size(uint32_t remaining_length);
+uint32_t get_mqtt_connect_size(mqtt_connect_packet_t* packet);
+uint32_t get_mqtt_publish_size(mqtt_publish_packet_t* packet);
+uint32_t get_mqtt_puback_size();
+uint32_t get_mqtt_pubrec_size();
+uint32_t get_mqtt_pubrel_size();
+uint32_t get_mqtt_pubcomp_size();
+uint32_t get_mqtt_subscribe_size(mqtt_un_subscribe_packet_t* packet);
+uint32_t get_mqtt_unsubscribe_size(mqtt_un_subscribe_packet_t* packet);
+uint32_t get_mqtt_pingreq_size();
+uint32_t get_mqtt_disconnect_size();
 
 /**
  * @brief Packs the remaining length into a given byte array.
@@ -466,11 +466,11 @@ uint32_t getMqttDisconnectSize();
  * The Remaining Length is the number of bytes remaining within the current packet, including data in the variable header and the payload. The Remaining Length does not include the bytes used to encode the Remaining Length.
  * The Remaining Length is encoded using a variable length encoding scheme which uses a single byte for values up to 127. Larger values are handled as follows. The least significant seven bits of each byte encode the data, and the most significant bit is used to indicate that there are following bytes in the representation. Thus each byte encodes 128 values and a "continuation bit". The maximum number of bytes in the Remaining Length field is four.
  * 
- * @param remainingLength The remaining length which is to by encoded into the bytes array
+ * @param remaining_length The remaining length which is to by encoded into the bytes array
  * @param bytes A pointer to an array which needs to have up to 4 upcoming bytes
  * @return uint8_t Size of the resulting remaining length bytes
  */
-uint8_t packMqttRemainingLength(uint8_t *bytes, uint32_t remainingLength);
+uint8_t pack_mqtt_remaining_length(uint8_t* bytes, uint32_t remaining_length);
 
 /**
  * @brief Packs an MQTT CONNECT packet into a given byte array.
@@ -482,7 +482,7 @@ uint8_t packMqttRemainingLength(uint8_t *bytes, uint32_t remainingLength);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet);
+uint32_t pack_mqtt_connect(uint8_t* bytes, mqtt_connect_packet_t* packet);
 
 /**
  * @brief Packs an MQTT PUBLISH packet into a given byte array.
@@ -501,51 +501,51 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet);
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet);
+uint32_t pack_mqtt_publish(uint8_t* bytes, mqtt_publish_packet_t* packet);
 
 /**
  * @brief Packs an MQTT PUBACK packet into a given byte array.
  * 
  * A PUBACK Packet is the response to a PUBLISH Packet with QoS level 1.
  * 
- * @param packetIdentifier 
+ * @param packet_identifier 
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubAck(uint8_t *bytes, uint16_t packetIdentifier);
+uint32_t pack_mqtt_puback(uint8_t* bytes, uint16_t packet_identifier);
 
 /**
  * @brief Packs an MQTT PUBREC packet into a given byte array.
  * 
  * A PUBREC Packet is the response to a PUBLISH Packet with QoS 2. It is the second packet of the QoS 2 protocol exchange.
  * 
- * @param packetIdentifier 
+ * @param packet_identifier 
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubRec(uint8_t *bytes, uint16_t packetIdentifier);
+uint32_t pack_mqtt_pubrec(uint8_t* bytes, uint16_t packet_identifier);
 
 /**
  * @brief Packs an MQTT PUBREL packet into a given byte array.
  * 
  * A PUBREL Packet is the response to a PUBREC Packet. It is the third packet of the QoS 2 protocol exchange.
  * 
- * @param packetIdentifier 
+ * @param packet_identifier 
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubRel(uint8_t *bytes, uint16_t packetIdentifier);
+uint32_t pack_mqtt_pubrel(uint8_t* bytes, uint16_t packet_identifier);
 
 /**
  * @brief Packs an MQTT PUBCOMP packet into a given byte array.
  * 
  * The PUBCOMP Packet is the response to a PUBREL Packet. It is the fourth and final packet of the QoS 2 protocol exchange.
  * 
- * @param packetIdentifier 
+ * @param packet_identifier 
  * @param bytes 
  * @return uint32_t 
  */
-uint32_t packMqttPubComp(uint8_t *bytes, uint16_t packetIdentifier);
+uint32_t pack_mqtt_pubcomp(uint8_t* bytes, uint16_t packet_identifier);
 
 /**
  * @brief Packs an MQTT SUBSCRIBE packet into a given byte array.
@@ -564,7 +564,7 @@ uint32_t packMqttPubComp(uint8_t *bytes, uint16_t packetIdentifier);
  * @param packet 
  * @param bytes 
  */
-uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet);
+uint32_t pack_mqtt_subscribe(uint8_t* bytes, mqtt_un_subscribe_packet_t* packet);
 
 /**
  * @brief Packs an MQTT UNSUBSCRIBE packet into a given byte array.
@@ -583,7 +583,7 @@ uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
  * 
  * @return uint32_t 
  */
-uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet);
+uint32_t pack_mqtt_unsubscribe(uint8_t* bytes, mqtt_un_subscribe_packet_t* packet);
 
 /**
  * @brief Packs an MQTT PINGREQ packet into a given byte array.
@@ -595,7 +595,7 @@ uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packe
  *
  * @return uint32_t 
  */
-uint32_t packMqttPingReq(uint8_t *bytes);
+uint32_t pack_mqtt_pingreq(uint8_t* bytes);
 
 /**
  * @brief Packs an MQTT DISCONNECT packet into a given byte array.
@@ -605,30 +605,22 @@ uint32_t packMqttPingReq(uint8_t *bytes);
  * 
  * @return uint32_t 
  */
-uint32_t packMqttDisconnect(uint8_t *bytes);
+uint32_t pack_mqtt_disconnect(uint8_t* bytes);
 
 /**
  * @brief Unpacks MQTT packets out of a stream of bytes which arrives in chunks.
  * 
- * This function gets the MqttPacket struct which contains a byte buffer which needs to be large
+ * This function gets the mqtt_packet struct which contains a byte buffer which needs to be large
  * enough so that it can hold all the bytes of the MQTT packet currently decoded.
  * 
- * @param mqttMessage A pointer to a struct holding the information regarding an MQTT packet.
- * @param currentSize The current number of bytes in the MQTT packet.
- * @param chunkSize The size of the last added chunk.
- * @param onMqttPacketComplete A pointer to a function which is called as soon as an MQTT packet is complete.
- * @return uint32_t The size of the MQTT packet which is currently unpacked.
+ * @param bytes A pointer to a struct holding the information regarding an MQTT packet.
+ * @param size The current number of bytes in the MQTT packet.
+ * @param packet The struct which will hold the unpacked information about the MQTT packet.ss
  */
-void unpackMqttPacket
-(
-    uint8_t *bytes,
-    uint32_t size,
-    struct MqttPacket *packet
-);
-
-void unpackMqttPacketIdentifier(uint8_t *bytes, struct MqttPacket *packet, uint16_t *packetIdentifier);
-void unpackMqttPublish(uint8_t *bytes, struct MqttPacket *packet, struct MqttPublishPacket *publishPacket);
-void unpackMqttConnAck(uint8_t *bytes, struct MqttPacket *packet, struct MqttConnAckPacket *connAckPacket);
-void unpackMqttSubAck(uint8_t *bytes, struct MqttPacket *packet, struct MqttSubAckPacket *subAckPacket);
+void unpack_mqtt_packet(uint8_t* bytes, uint32_t size, mqtt_packet_t* packet);
+void unpack_mqtt_packet_identifier(uint8_t* bytes, mqtt_packet_t* packet, uint16_t* packet_identifier);
+void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet);
+void unpack_mqtt_connack(uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet);
+void unpack_mqtt_suback(uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* suback_packet);
 
 #endif

@@ -1,21 +1,20 @@
-#include <stdio.h>
 #include <string.h>
-#include "mqtt_packer.h"
+#include <mqtt_packer.h>
 
-uint8_t getMqttRemainingLengthSize(uint32_t remainingLength)
+uint8_t get_mqtt_remaining_length_size(uint32_t remaining_length)
 {
     
-    if (remainingLength <= 127)
+    if (remaining_length <= 127)
     {
         return 1;
     }
 
-    if (remainingLength <= 16383)
+    if (remaining_length <= 16383)
     {
         return 2;
     }
 
-    if (remainingLength <= 2097151)
+    if (remaining_length <= 2097151)
     {
         return 3;
     }
@@ -23,28 +22,28 @@ uint8_t getMqttRemainingLengthSize(uint32_t remainingLength)
     return 4;
 }
 
-uint32_t getMqttConnectSize(struct MqttConnectPacket *packet)
+uint32_t get_mqtt_connect_size(mqtt_connect_packet_t* packet)
 {
     // Variable header size: Protocol name + protocol level + connect flags + keep alive
     uint32_t size = 10;
 
     // Client identifier
-    size += packet->clientIdentifierSize ? 2 + packet->clientIdentifierSize : 2;
+    size += packet->client_identifier_size ? 2 + packet->client_identifier_size : 2;
 
     // Will topic
-    size += packet->willTopicSize ? 2 + packet->willTopicSize : 0;
+    size += packet->will_topic_size ? 2 + packet->will_topic_size : 0;
 
     // Will message
-    size += packet->willMessageSize ? 2 + packet->willMessageSize : 0;
+    size += packet->will_message_size ? 2 + packet->will_message_size : 0;
 
     // Username
-    size += packet->userNameSize ? 2 + packet->userNameSize : 0;
+    size += packet->username_size ? 2 + packet->username_size : 0;
 
     // Password
-    size += packet->passwordSize ? 2 + packet->passwordSize : 0;
+    size += packet->password_size ? 2 + packet->password_size : 0;
 
     // Fixed header - Remaining length
-    size += getMqttRemainingLengthSize(size);
+    size += get_mqtt_remaining_length_size(size);
 
     // Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
     size += 1;
@@ -52,10 +51,10 @@ uint32_t getMqttConnectSize(struct MqttConnectPacket *packet)
     return size;
 }
 
-uint32_t getMqttPublishSize(struct MqttPublishPacket *packet)
+uint32_t get_mqtt_publish_size(mqtt_publish_packet_t* packet)
 {
     // Topic name
-    uint32_t size = 2 + packet->topicNameSize;
+    uint32_t size = 2 + packet->topic_name_size;
 
     // Packet identifier - The Packet Identifier field is only present in PUBLISH Packets where the QoS level is 1 or 2.
     if (packet->qos == MQTT_QOS_AT_LEAST_ONCE || packet->qos == MQTT_QOS_EXACTLY_ONCE)
@@ -64,10 +63,10 @@ uint32_t getMqttPublishSize(struct MqttPublishPacket *packet)
     }
 
     // Payload
-    size += packet->payloadSize;
+    size += packet->payload_size;
 
     // Fixed header - Remaining length
-    size += getMqttRemainingLengthSize(size);
+    size += get_mqtt_remaining_length_size(size);
 
     // Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
     size += 1;
@@ -75,36 +74,36 @@ uint32_t getMqttPublishSize(struct MqttPublishPacket *packet)
     return size;
 }
 
-uint32_t getMqttPubAckSize()
+uint32_t get_mqtt_puback_size()
 {
     return 4;
 }
 
-uint32_t getMqttPubRecSize()
+uint32_t get_mqtt_pubrec_size()
 {
     return 4;
 }
 
-uint32_t getMqttPubRelSize()
+uint32_t get_mqtt_pubrel_size()
 {
     return 4;
 }
 
-uint32_t getMqttPubCompSize()
+uint32_t get_mqtt_pubcomp_size()
 {
     return 4;
 }
 
-uint32_t getMqttSubscribeSize(struct MqttUnSubscribePacket *packet)
+uint32_t get_mqtt_subscribe_size(mqtt_un_subscribe_packet_t* packet)
 {
     // Variable header
     uint32_t size = 2;
 
     // Payload - Topic filter + QoS
-    size += 2 + packet->topicFilterSize + 1;
+    size += 2 + packet->topic_filter_size + 1;
 
     // Fixed header - Remaining length
-    size += getMqttRemainingLengthSize(size);
+    size += get_mqtt_remaining_length_size(size);
 
     // Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
     size += 1;
@@ -112,16 +111,16 @@ uint32_t getMqttSubscribeSize(struct MqttUnSubscribePacket *packet)
     return size;
 }
 
-uint32_t getMqttUnsubscribeSize(struct MqttUnSubscribePacket *packet)
+uint32_t get_mqtt_unsubscribe_size(mqtt_un_subscribe_packet_t* packet)
 {
     // Variable header
     uint32_t size = 2;
 
     // Payload - Topic filter
-    size += 2 + packet->topicFilterSize;
+    size += 2 + packet->topic_filter_size;
 
     // Fixed header - Remaining length
-    size += getMqttRemainingLengthSize(size);
+    size += get_mqtt_remaining_length_size(size);
 
     // Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
     size += 1;
@@ -129,70 +128,70 @@ uint32_t getMqttUnsubscribeSize(struct MqttUnSubscribePacket *packet)
     return size;
 }
 
-uint32_t getMqttPingReqSize()
+uint32_t get_mqtt_pingreq_size()
 {
     return 2;
 }
 
-uint32_t getMqttDisconnectSize()
+uint32_t get_mqtt_disconnect_size()
 {
     return 2;
 }
 
-uint8_t packMqttRemainingLength(uint8_t *bytes, uint32_t remainingLength)
+uint8_t pack_mqtt_remaining_length(uint8_t *bytes, uint32_t remaining_length)
 {
     uint8_t size = 0;
 
     // If the remaining length is smaller than 128^1
-    if (remainingLength <= 127)
+    if (remaining_length <= 127)
     {
         // Set continuation bit (bit 7) to 0
-        bytes[size] = (uint8_t) (remainingLength & 0x7F);
+        bytes[size] = (uint8_t) (remaining_length & 0x7F);
         size++;
     }
     // If the remaining length is larger than 128^1
     else
     {
         // Set continuation bit (bit 7) to 1
-        bytes[size] = (uint8_t) ((remainingLength & 0x7F) | 0x80);
+        bytes[size] = (uint8_t) ((remaining_length & 0x7F) | 0x80);
         size++;
     } 
 
     // If the remaining length is smaller than 128^2
-    if (remainingLength >= 128 && remainingLength <= 16383)
+    if (remaining_length >= 128 && remaining_length <= 16383)
     {
         // Set continuation bit to 0
-        bytes[size] = (uint8_t) ((remainingLength >> 7) & 0x7F);
+        bytes[size] = (uint8_t) ((remaining_length >> 7) & 0x7F);
         size++;
     }
     // If the remaining length is larger than 128^1
-    else if (remainingLength >= 128)
+    else if (remaining_length >= 128)
     {
         // Set continuation bit to 1
-        bytes[size] = (uint8_t) ((((remainingLength >> 7) & 0x7F) | 0x80));
+        bytes[size] = (uint8_t) ((((remaining_length >> 7) & 0x7F) | 0x80));
         size++;
     }
 
     // If the remaining length is smaller than 128^3
-    if (remainingLength >= 16384 && remainingLength <= 2097151)
+    if (remaining_length >= 16384 && remaining_length <= 2097151)
     {
         // Set continuation bit to 0
-        bytes[size] = (uint8_t) ((remainingLength >> 14) & 0x7F);
+        bytes[size] = (uint8_t) ((remaining_length >> 14) & 0x7F);
         size++;
     }
     // If the remaining length is larger than 128^2
-    else if (remainingLength >= 16384)
+    else if (remaining_length >= 16384)
     {
         // Set continuation bit to 1
-        bytes[size] = (uint8_t) ((((remainingLength >> 14) & 0x7F) | 0x80));
+        bytes[size] = (uint8_t) ((((remaining_length >> 14) & 0x7F) | 0x80));
         size++;
     }
 
     // If the remaining length is larger than 128^3
-    if (remainingLength >= 2097152)
+    if (remaining_length >= 2097152)
     {
         // Set continuation bit to 0
-        bytes[size] = (uint8_t) ((remainingLength >> 21) & 0x7F);
+        bytes[size] = (uint8_t) ((remaining_length >> 21) & 0x7F);
         size++;
     }
 
@@ -208,7 +207,7 @@ uint8_t packMqttRemainingLength(uint8_t *bytes, uint32_t remainingLength)
  * @param packet 
  * @param bytes 
  */
-uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
+uint32_t pack_mqtt_connect(uint8_t *bytes, mqtt_connect_packet_t* packet)
 {
     uint32_t size = 0;
 
@@ -223,27 +222,27 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      * Fixed header - Remaining length
      */
 
-    uint32_t remainingLength = 0;
+    uint32_t remaining_length = 0;
 
     // Variable header size: Protocol name + protocol level + connect flags + keep alive
-    remainingLength += 10;
+    remaining_length += 10;
 
     // Client identifier
-    remainingLength += packet->clientIdentifierSize ? 2 + packet->clientIdentifierSize : 2;
+    remaining_length += packet->client_identifier_size ? 2 + packet->client_identifier_size : 2;
 
     // Will topic
-    remainingLength += packet->willTopicSize ? 2 + packet->willTopicSize : 0;
+    remaining_length += packet->will_topic_size ? 2 + packet->will_topic_size : 0;
 
     // Will message
-    remainingLength += packet->willMessageSize ? 2 + packet->willMessageSize : 0;
+    remaining_length += packet->will_message_size ? 2 + packet->will_message_size : 0;
 
     // Username
-    remainingLength += packet->userNameSize ? 2 + packet->userNameSize : 0;
+    remaining_length += packet->username_size ? 2 + packet->username_size : 0;
 
     // Password
-    remainingLength += packet->passwordSize ? 2 + packet->passwordSize : 0;
+    remaining_length += packet->password_size ? 2 + packet->password_size : 0;
 
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Protocol name
@@ -280,48 +279,48 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      * 
      * [MQTT-3.1.2-3] The Server MUST validate that the reserved flag in the CONNECT Control Packet is set to zero and disconnect the Client if it is not zero.
      */
-    uint8_t connectFlags = 0;
+    uint8_t connect_flags = 0;
 
     // [MQTT-3.1.3-7] If the Client supplies a zero-byte ClientId, the Client MUST also set CleanSession to 1.
-    if (packet->cleanSession || packet->clientIdentifierSize == 0)
+    if (packet->clean_session || packet->client_identifier_size == 0)
     {
-        connectFlags |= 0x02;
+        connect_flags |= 0x02;
     }
 
-    if (packet->willMessageSize > 0 || packet->willTopicSize > 0)
+    if (packet->will_message_size > 0 || packet->will_topic_size > 0)
     {
-        connectFlags |= 0x04;
+        connect_flags |= 0x04;
     }
 
-    if (packet->willQos)
+    if (packet->will_qos)
     {
-        connectFlags |= (packet->willQos << 3);
+        connect_flags |= (packet->will_qos << 3);
     }
 
-    if (packet->willRetain)
+    if (packet->will_retain)
     {
-        connectFlags |= 0x20;
+        connect_flags |= 0x20;
     }
 
-    if (packet->userNameSize > 0)
+    if (packet->username_size > 0)
     {
-        connectFlags |= 0x80;
+        connect_flags |= 0x80;
     }
 
-    if (packet->passwordSize > 0)
+    if (packet->password_size > 0)
     {
-        connectFlags |= 0x40;
+        connect_flags |= 0x40;
     }
 
-    bytes[size] = connectFlags;
+    bytes[size] = connect_flags;
     size++;
 
     /**
      * Variable header - Keep alive
      */
-    bytes[size] = (uint8_t) (packet->keepAlive >> 8);
+    bytes[size] = (uint8_t) (packet->keep_alive >> 8);
     size++;
-    bytes[size] = (uint8_t) (packet->keepAlive);
+    bytes[size] = (uint8_t) (packet->keep_alive);
     size++;
 
     /**
@@ -340,18 +339,18 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      */
 
     // String length MSB
-    bytes[size] = (uint8_t) (packet->clientIdentifierSize >> 8);
+    bytes[size] = (uint8_t) (packet->client_identifier_size >> 8);
     size++;
 
     // String length LSB
-    bytes[size] = (uint8_t) packet->clientIdentifierSize;
+    bytes[size] = (uint8_t) packet->client_identifier_size;
     size++;
 
-    if (packet->clientIdentifierSize > 0)
+    if (packet->client_identifier_size > 0)
     {
         // UTF-8 string
-        memcpy(&(bytes[size]), packet->clientIdentifier, packet->clientIdentifierSize);
-        size += packet->clientIdentifierSize;
+        memcpy(&(bytes[size]), packet->client_identifier, packet->client_identifier_size);
+        size += packet->client_identifier_size;
     }
 
     /**
@@ -362,17 +361,17 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      * [MQTT-3.1.3-10] The Will Topic MUST be a UTF-8 encoded string as defined in Section 1.5.3.
      */
 
-    if (packet->willTopicSize > 0)
+    if (packet->will_topic_size > 0)
     {
         // String length MSB + LSB
-        bytes[size] = (uint8_t) (packet->willTopicSize >> 8);
+        bytes[size] = (uint8_t) (packet->will_topic_size >> 8);
         size++;
-        bytes[size] = (uint8_t) packet->willTopicSize;
+        bytes[size] = (uint8_t) packet->will_topic_size;
         size++;
 
         // UTF-8 string
-        memcpy(&(bytes[size]), packet->willTopic, packet->willTopicSize);
-        size += packet->willTopicSize;
+        memcpy(&(bytes[size]), packet->will_topic, packet->will_topic_size);
+        size += packet->will_topic_size;
     }
 
     /**
@@ -386,17 +385,17 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      * When the Will Message is published to the Will Topic its payload consists only of the data portion of this field, not the first two length bytes.
      */
 
-    if (packet->willMessageSize > 0)
+    if (packet->will_message_size > 0)
     {
         // String length MSB + LSB
-        bytes[size] = (uint8_t) (packet->willMessageSize >> 8);
+        bytes[size] = (uint8_t) (packet->will_message_size >> 8);
         size++;
-        bytes[size] = (uint8_t) packet->willMessageSize;
+        bytes[size] = (uint8_t) packet->will_message_size;
         size++;
 
         // UTF-8 string
-        memcpy(&(bytes[size]), packet->willMessage, packet->willMessageSize);
-        size += packet->willMessageSize;
+        memcpy(&(bytes[size]), packet->will_message, packet->will_message_size);
+        size += packet->will_message_size;
     }
 
     /**
@@ -408,17 +407,17 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      * [MQTT-3.1.3-11] The User Name MUST be a UTF-8 encoded string. 
      */
 
-    if (packet->userNameSize > 0)
+    if (packet->username_size > 0)
     {
         // String length MSB + LSB
-        bytes[size] = (uint8_t) (packet->userNameSize >> 8);
+        bytes[size] = (uint8_t) (packet->username_size >> 8);
         size++;
-        bytes[size] = (uint8_t) packet->userNameSize;
+        bytes[size] = (uint8_t) packet->username_size;
         size++;
 
         // UTF-8 string
-        memcpy(&(bytes[size]), packet->userName, packet->userNameSize);
-        size += packet->userNameSize;
+        memcpy(&(bytes[size]), packet->username, packet->username_size);
+        size += packet->username_size;
     }
 
     /**
@@ -428,23 +427,23 @@ uint32_t packMqttConnect(uint8_t *bytes, struct MqttConnectPacket *packet)
      * The Password field contains 0 to 65535 bytes of binary data prefixed with a two byte length field which indicates the number of bytes used by the binary data (it does not include the two bytes taken up by the length field itself).
      */
 
-    if (packet->passwordSize > 0)
+    if (packet->password_size > 0)
     {
         // String length MSB + LSB
-        bytes[size] = (uint8_t) (packet->passwordSize >> 8);
+        bytes[size] = (uint8_t) (packet->password_size >> 8);
         size++;
-        bytes[size] = (uint8_t) packet->passwordSize;
+        bytes[size] = (uint8_t) packet->password_size;
         size++;
 
         // UTF-8 string
-        memcpy(&(bytes[size]), packet->password, packet->passwordSize);
-        size += packet->passwordSize;
+        memcpy(&(bytes[size]), packet->password, packet->password_size);
+        size += packet->password_size;
     }
 
     return size;
 }
 
-uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet)
+uint32_t pack_mqtt_publish(uint8_t *bytes, mqtt_publish_packet_t* packet)
 {
     uint32_t size = 0;
 
@@ -472,21 +471,21 @@ uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet)
      * Fixed header - Remaining length
      */
 
-    uint32_t remainingLength = 0;
+    uint32_t remaining_length = 0;
 
     // Topic name
-    remainingLength += 2 + packet->topicNameSize;
+    remaining_length += 2 + packet->topic_name_size;
 
     // Packet identifier - The Packet Identifier field is only present in PUBLISH Packets where the QoS level is 1 or 2.
     if (packet->qos == MQTT_QOS_AT_LEAST_ONCE || packet->qos == MQTT_QOS_EXACTLY_ONCE)
     {
-        remainingLength += 2;
+        remaining_length += 2;
     }
 
     // Payload
-    remainingLength += packet->payloadSize;
+    remaining_length += packet->payload_size;
 
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Topic name
@@ -499,21 +498,21 @@ uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet)
      */
 
     // String length MSB + LSB
-    bytes[size] = (uint8_t) (packet->topicNameSize >> 8);
+    bytes[size] = (uint8_t) (packet->topic_name_size >> 8);
     size++;
-    bytes[size] = (uint8_t) packet->topicNameSize;
+    bytes[size] = (uint8_t) packet->topic_name_size;
     size++;
     
     // Topic name
-    memcpy(&(bytes[size]), packet->topicName, packet->topicNameSize);
-    size += packet->topicNameSize;
+    memcpy(&(bytes[size]), packet->topic_name, packet->topic_name_size);
+    size += packet->topic_name_size;
 
     /**
      * Variable header - Packet Identifier
      */
-    bytes[size] = (uint8_t) (packet->packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet->packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packet->packetIdentifier;
+    bytes[size] = (uint8_t) packet->packet_identifier;
     size++;
 
     /**
@@ -525,13 +524,13 @@ uint32_t packMqttPublish(uint8_t *bytes, struct MqttPublishPacket *packet)
      * It is valid for a PUBLISH Packet to contain a zero length payload.
      */
 
-    memcpy(&(bytes[size]), packet->payload, packet->payloadSize);
-    size += packet->payloadSize;
+    memcpy(&(bytes[size]), packet->payload, packet->payload_size);
+    size += packet->payload_size;
 
     return size;
 }
 
-uint32_t packMqttPubAck(uint8_t *bytes, uint16_t packetIdentifier)
+uint32_t pack_mqtt_puback(uint8_t *bytes, uint16_t packet_identifier)
 {
     uint32_t size = 0;
 
@@ -547,23 +546,23 @@ uint32_t packMqttPubAck(uint8_t *bytes, uint16_t packetIdentifier)
      */
 
     // Variable header
-    uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    uint32_t remaining_length = 2;
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Packet Identifier
      * 
      * This contains the Packet Identifier from the PUBLISH Packet that is being acknowledged.
      */
-    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packetIdentifier;
+    bytes[size] = (uint8_t) packet_identifier;
     size++;
 
     return size;
 }
 
-uint32_t packMqttPubRec(uint8_t *bytes, uint16_t packetIdentifier)
+uint32_t pack_mqtt_pubrec(uint8_t *bytes, uint16_t packet_identifier)
 {
     uint32_t size = 0;
 
@@ -579,23 +578,23 @@ uint32_t packMqttPubRec(uint8_t *bytes, uint16_t packetIdentifier)
      */
 
     // Variable header
-    uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    uint32_t remaining_length = 2;
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Packet Identifier
      * 
      * This contains the Packet Identifier from the PUBLISH Packet that is being acknowledged.
      */
-    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packetIdentifier;
+    bytes[size] = (uint8_t) packet_identifier;
     size++;
 
     return size;
 }
 
-uint32_t packMqttPubRel(uint8_t *bytes, uint16_t packetIdentifier)
+uint32_t pack_mqtt_pubrel(uint8_t *bytes, uint16_t packet_identifier)
 {
     uint32_t size = 0;
 
@@ -611,23 +610,23 @@ uint32_t packMqttPubRel(uint8_t *bytes, uint16_t packetIdentifier)
      */
 
     // Variable header
-    uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    uint32_t remaining_length = 2;
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Packet Identifier
      * 
      * The variable header contains the same Packet Identifier as the PUBREC Packet that is being acknowledged.
      */
-    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packetIdentifier;
+    bytes[size] = (uint8_t) packet_identifier;
     size++;
 
     return size;
 }
 
-uint32_t packMqttPubComp(uint8_t *bytes, uint16_t packetIdentifier)
+uint32_t pack_mqtt_pubcomp(uint8_t *bytes, uint16_t packet_identifier)
 {
     uint32_t size = 0;
 
@@ -643,24 +642,24 @@ uint32_t packMqttPubComp(uint8_t *bytes, uint16_t packetIdentifier)
      */
 
     // Variable header
-    uint32_t remainingLength = 2;
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    uint32_t remaining_length = 2;
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Packet Identifier
      * 
      * The variable header contains the same Packet Identifier as the PUBREL Packet that is being acknowledged.
      */
-    bytes[size] = (uint8_t) (packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packetIdentifier;
+    bytes[size] = (uint8_t) packet_identifier;
     size++;
 
     return size;
 }
 
 
-uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
+uint32_t pack_mqtt_subscribe(uint8_t *bytes, mqtt_un_subscribe_packet_t* packet)
 {
     uint32_t size = 0;
 
@@ -678,19 +677,19 @@ uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
      */
 
     // Variable header length
-    uint32_t remainingLength = 2;
+    uint32_t remaining_length = 2;
 
     // Topic filter + QoS length
-    remainingLength += 2 + packet->topicFilterSize + 1;
+    remaining_length += 2 + packet->topic_filter_size + 1;
 
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Packet Identifier
      */
-    bytes[size] = (uint8_t) (packet->packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet->packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packet->packetIdentifier;
+    bytes[size] = (uint8_t) packet->packet_identifier;
     size++;
 
     /**
@@ -709,14 +708,14 @@ uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
      */
 
     // String length MSB + LSB
-    bytes[size] = (uint8_t) (packet->topicFilterSize >> 8);
+    bytes[size] = (uint8_t) (packet->topic_filter_size >> 8);
     size++;
-    bytes[size] = (uint8_t) packet->topicFilterSize;
+    bytes[size] = (uint8_t) packet->topic_filter_size;
     size++;
     
     // Topic filter
-    memcpy(&(bytes[size]), packet->topicFilter, packet->topicFilterSize);
-    size += packet->topicFilterSize;
+    memcpy(&(bytes[size]), packet->topic_filter, packet->topic_filter_size);
+    size += packet->topic_filter_size;
 
     // QoS
     bytes[size] = packet->qos;
@@ -725,7 +724,7 @@ uint32_t packMqttSubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
     return size;
 }
 
-uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packet)
+uint32_t pack_mqtt_unsubscribe(uint8_t *bytes, mqtt_un_subscribe_packet_t* packet)
 {
     uint32_t size = 0;
 
@@ -741,19 +740,19 @@ uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packe
      */
 
     // Variable header length
-    uint32_t remainingLength = 2;
+    uint32_t remaining_length = 2;
 
     // Topic filter
-    remainingLength += 2 + packet->topicFilterSize;
+    remaining_length += 2 + packet->topic_filter_size;
 
-    size += packMqttRemainingLength(&(bytes[size]), remainingLength);
+    size += pack_mqtt_remaining_length(&(bytes[size]), remaining_length);
 
     /**
      * Variable header - Packet Identifier
      */
-    bytes[size] = (uint8_t) (packet->packetIdentifier >> 8);
+    bytes[size] = (uint8_t) (packet->packet_identifier >> 8);
     size++;
-    bytes[size] = (uint8_t) packet->packetIdentifier;
+    bytes[size] = (uint8_t) packet->packet_identifier;
     size++;
 
     /**
@@ -772,19 +771,19 @@ uint32_t packMqttUnsubscribe(uint8_t *bytes, struct MqttUnSubscribePacket *packe
      */
 
     // String length MSB + LSB
-    bytes[size] = (uint8_t) (packet->topicFilterSize >> 8);
+    bytes[size] = (uint8_t) (packet->topic_filter_size >> 8);
     size++;
-    bytes[size] = (uint8_t) packet->topicFilterSize;
+    bytes[size] = (uint8_t) packet->topic_filter_size;
     size++;
     
     // Topic filter
-    memcpy(&(bytes[size]), packet->topicFilter, packet->topicFilterSize);
-    size += packet->topicFilterSize;
+    memcpy(&(bytes[size]), packet->topic_filter, packet->topic_filter_size);
+    size += packet->topic_filter_size;
 
     return size;
 }
 
-uint32_t packMqttPingReq(uint8_t *bytes)
+uint32_t pack_mqtt_pingreq(uint8_t *bytes)
 {
     /**
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type
@@ -801,7 +800,7 @@ uint32_t packMqttPingReq(uint8_t *bytes)
     return 2;
 }
 
-uint32_t packMqttDisconnect(uint8_t *bytes)
+uint32_t pack_mqtt_disconnect(uint8_t *bytes)
 {
     /**
      * Fixed header - MQTT Control Packet type + Flags specific to each MQTT Control Packet type

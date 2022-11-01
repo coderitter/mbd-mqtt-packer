@@ -1,60 +1,58 @@
-#include <stdio.h>
-#include <string.h>
-#include "mqtt_packer.h"
+#include <mqtt_packer.h>
 
-void unpackMqttPacket
+void unpack_mqtt_packet
 (
-    uint8_t *bytes, 
+    uint8_t* bytes, 
     uint32_t size,
-    struct MqttPacket *packet
+    mqtt_packet_t* packet
 )
 {
     // Read the first of two bytes of the fixed header which is always present
     if (size >= 1)
     {
-        packet->fixedHeaderSize = 2;
+        packet->fixed_header_size = 2;
         packet->type = (bytes[0] & 0xF0) >> 4;
-        packet->remainingSize = 0;
+        packet->remaining_size = 0;
     }
 
     // Read the second of two bytes of the fixed header which is always present and
     // which contains the first byte of the remaining length
     if (size >= 2)
     {
-        packet->remainingSize = bytes[1] & 0x7F;
+        packet->remaining_size = bytes[1] & 0x7F;
 
         if ((bytes[1] & 0x80) == 128)
         {
-            packet->fixedHeaderSize++;
+            packet->fixed_header_size++;
         }
     }
 
     // Read the second byte of the remaining length if present
-    if (size >= 3 && packet->fixedHeaderSize >= 3)
+    if (size >= 3 && packet->fixed_header_size >= 3)
     {
-        packet->remainingSize += (bytes[2] & 0x7F) << 7;
+        packet->remaining_size += (bytes[2] & 0x7F) << 7;
 
         if ((bytes[2] & 0x80) == 128)
         {
-            packet->fixedHeaderSize++;
+            packet->fixed_header_size++;
         }
     }
 
     // Read the third byte of the remaining length if present
-    if (size >= 4 && packet->fixedHeaderSize >= 4)
+    if (size >= 4 && packet->fixed_header_size >= 4)
     {
-        packet->remainingSize += (bytes[3] & 0x7F) << 14;
+        packet->remaining_size += (bytes[3] & 0x7F) << 14;
     
         if ((bytes[3] & 0x80) == 128)
         {
-            packet->fixedHeaderSize++;
+            packet->fixed_header_size++;
         }
     }
 
     // Read the fourth and last byte of the remaining length if present
-    if (size >= 5 && packet->fixedHeaderSize >= 5)
+    if (size >= 5 && packet->fixed_header_size >= 5)
     {
-        packet->remainingSize += (bytes[4] & 0x7F) << 21;
+        packet->remaining_size += (bytes[4] & 0x7F) << 21;
 
         if ((bytes[4] & 0x80) == 128)
         {
@@ -64,10 +62,10 @@ void unpackMqttPacket
     }
 
     // Calculate the size that we can calculate until now, even if it is incomplete
-    packet->size = packet->fixedHeaderSize + packet->remainingSize;
+    packet->size = packet->fixed_header_size + packet->remaining_size;
 }
 
-void unpackMqttPacketIdentifier(uint8_t *bytes, struct MqttPacket *packet, uint16_t *packetIdentifier)
+void unpack_mqtt_packet_identifier(uint8_t* bytes, mqtt_packet_t* packet, uint16_t* packet_identifier)
 {
     if
     (
@@ -78,37 +76,37 @@ void unpackMqttPacketIdentifier(uint8_t *bytes, struct MqttPacket *packet, uint1
         packet->type == MQTT_PACKET_UNSUBACK
     )
     {
-        (*packetIdentifier) = (bytes[packet->fixedHeaderSize] << 8) + bytes[packet->fixedHeaderSize + 1];
+        (*packet_identifier) = (bytes[packet->fixed_header_size] << 8) + bytes[packet->fixed_header_size + 1];
     }
 }
 
-void unpackMqttConnAck(uint8_t *bytes, struct MqttPacket *packet, struct MqttConnAckPacket *connAckPacket)
+void unpack_mqtt_connack(uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet)
 {    
-    connAckPacket->sessionPresent = bytes[2] & 0x01 ? 1 : 0;
-    connAckPacket->returnCode = bytes[3];
+    connack_packet->session_present = bytes[2] & 0x01 ? 1 : 0;
+    connack_packet->return_code = bytes[3];
 }
 
-void unpackMqttPublish(uint8_t *bytes, struct MqttPacket *packet, struct MqttPublishPacket *publishPacket)
+void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet)
 {
-    publishPacket->dup = bytes[0] & 0x08 ? 1 : 0;
-    publishPacket->qos = (bytes[0] & 0x06) >> 1;
-    publishPacket->retain = bytes[0] & 0x01 ? 1 : 0;
+    publish_packet->dup = bytes[0] & 0x08 ? 1 : 0;
+    publish_packet->qos = (bytes[0] & 0x06) >> 1;
+    publish_packet->retain = bytes[0] & 0x01 ? 1 : 0;
 
-    publishPacket->topicName = &(bytes[packet->fixedHeaderSize + 2]);
-    publishPacket->topicNameSize = (bytes[packet->fixedHeaderSize] << 8) + bytes[packet->fixedHeaderSize + 1];
+    publish_packet->topic_name = &(bytes[packet->fixed_header_size + 2]);
+    publish_packet->topic_name_size = (bytes[packet->fixed_header_size] << 8) + bytes[packet->fixed_header_size + 1];
 
     // Fixed header size + topic name size value + topic name size
-    uint16_t packetIdentifierPosition = packet->fixedHeaderSize + 2 + publishPacket->topicNameSize;
-    publishPacket->packetIdentifier = (bytes[packetIdentifierPosition] << 8) + bytes[packetIdentifierPosition + 1];
+    uint16_t packet_identifier_position = packet->fixed_header_size + 2 + publish_packet->topic_name_size;
+    publish_packet->packet_identifier = (bytes[packet_identifier_position] << 8) + bytes[packet_identifier_position + 1];
 
     // Fixed header size + topic name size value + topic name size + packet identifier
-    publishPacket->payload = &(bytes[packet->fixedHeaderSize + 2 + publishPacket->topicNameSize + 2]);
+    publish_packet->payload = &(bytes[packet->fixed_header_size + 2 + publish_packet->topic_name_size + 2]);
     // Remaining size - topic name size value - topic name size - packet identifier
-    publishPacket->payloadSize = packet->remainingSize - 2 - publishPacket->topicNameSize - 2;
+    publish_packet->payload_size = packet->remaining_size - 2 - publish_packet->topic_name_size - 2;
 }
 
-void unpackMqttSubAck(uint8_t *bytes, struct MqttPacket *packet, struct MqttSubAckPacket *subAckPacket)
+void unpack_mqtt_suback(uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* subAckPacket)
 {
-    subAckPacket->packetIdentifier = (bytes[packet->fixedHeaderSize] << 8) + bytes[packet->fixedHeaderSize + 1];
-    subAckPacket->returnCode = bytes[packet->fixedHeaderSize + 2];
+    subAckPacket->packet_identifier = (bytes[packet->fixed_header_size] << 8) + bytes[packet->fixed_header_size + 1];
+    subAckPacket->return_code = bytes[packet->fixed_header_size + 2];
 }
