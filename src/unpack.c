@@ -95,14 +95,24 @@ void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_pac
     publish_packet->topic_name = &(bytes[packet->fixed_header_size + 2]);
     publish_packet->topic_name_size = (bytes[packet->fixed_header_size] << 8) + bytes[packet->fixed_header_size + 1];
 
-    // Fixed header size + topic name size value + topic name size
-    uint16_t packet_identifier_position = packet->fixed_header_size + 2 + publish_packet->topic_name_size;
-    publish_packet->packet_identifier = (bytes[packet_identifier_position] << 8) + bytes[packet_identifier_position + 1];
+    uint8_t packet_identifier_length = 2;
+
+    if (publish_packet->qos == 0) 
+    {
+        packet_identifier_length = 0;
+        publish_packet->packet_identifier = 0;
+    }
+    else 
+    {
+        // Fixed header size + topic name size value + topic name size
+        uint16_t packet_identifier_position = packet->fixed_header_size + 2 + publish_packet->topic_name_size;
+        publish_packet->packet_identifier = (bytes[packet_identifier_position] << 8) + bytes[packet_identifier_position + 1];
+    }
 
     // Fixed header size + topic name size value + topic name size + packet identifier
-    publish_packet->payload = &(bytes[packet->fixed_header_size + 2 + publish_packet->topic_name_size + 2]);
+    publish_packet->payload = &(bytes[packet->fixed_header_size + 2 + publish_packet->topic_name_size + packet_identifier_length]);
     // Remaining size - topic name size value - topic name size - packet identifier
-    publish_packet->payload_size = packet->remaining_size - 2 - publish_packet->topic_name_size - 2;
+    publish_packet->payload_size = packet->remaining_size - 2 - publish_packet->topic_name_size - packet_identifier_length;
 }
 
 void unpack_mqtt_suback(uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* subAckPacket)

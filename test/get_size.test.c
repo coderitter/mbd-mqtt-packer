@@ -274,7 +274,7 @@ static uint16_t it_should_get_the_correct_subscribe_size()
 
     uint8_t topic_filter[] = "TOPIC";
 
-    mqtt_unsubscribe_packet_t parameter = {
+    mqtt_un_subscribe_packet_t parameter = {
         .packet_identifier = 0xAABB,
         .topic_filter = topic_filter,
         .topic_filter_size = 5,
@@ -300,7 +300,7 @@ static uint16_t it_should_get_the_correct_unsubscribe_size()
 
     uint8_t topic_filter[] = "TOPIC";
 
-    mqtt_unsubscribe_packet_t parameter = {
+    mqtt_un_subscribe_packet_t parameter = {
         .packet_identifier = 0xAABB,
         .topic_filter = topic_filter,
         .topic_filter_size = 5,

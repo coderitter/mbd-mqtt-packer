@@ -489,6 +489,83 @@ static uint16_t it_should_unpack_a_publish_packet()
     return failed_assertions;
 }
 
+static uint16_t it_should_unpack_a_publish_packet_without_packet_identifier()
+{
+    printf("It should unpack a PUBLISH packet\n");
+    failed_assertions = 0;
+
+    uint8_t bytes[] = { 0x30, 0x2F, 0x00, 0x2C, 0x24, 0x53, 0x59, 0x53,
+                        0x2F, 0x56, 0x65, 0x72, 0x6E, 0x65, 0x4D, 0x51,
+                        0x40, 0x31, 0x37, 0x32, 0x2E, 0x32, 0x39, 0x2E,
+                        0x30, 0x2E, 0x32, 0x2F, 0x6D, 0x71, 0x74, 0x74,
+                        0x2F, 0x64, 0x69, 0x73, 0x63, 0x6F, 0x6E, 0x6E,
+                        0x65, 0x63, 0x74, 0x2F, 0x73, 0x65, 0x6E, 0x74, 
+                        0x30 };
+    mqtt_packet_t packet;
+
+    unpack_mqtt_packet(bytes, sizeof(bytes), &packet);
+    if (packet.size != sizeof(bytes))
+    {
+        printf("Expected packet size to be %lu but was %i\n", sizeof(bytes), packet.size);
+        failed_assertions++;
+    }
+
+    mqtt_publish_packet_t publish;
+    unpack_mqtt_publish(bytes, &packet, &publish);
+
+    if (publish.dup != 0)
+    {
+        printf("Expected dup to be 1 but was %i\n", publish.dup);
+        failed_assertions++;
+    }
+
+    if (publish.qos != MQTT_QOS_AT_MOST_ONCE)
+    {
+        printf("Expected qos to be 0x02 but was 0x%X\n", publish.qos);
+        failed_assertions++;
+    }
+
+    if (publish.retain != 0)
+    {
+        printf("Expected retain to be 1 but was %i\n", publish.dup);
+        failed_assertions++;
+    }
+
+    if (publish.topic_name != &(bytes[4]))
+    {
+        printf("Expected topic_name to be %p but was %p\n", &(bytes[4]), publish.topic_name);
+        failed_assertions++;
+    }
+
+    if (publish.topic_name_size != 44)
+    {
+        printf("Expected topic_name_size to be 44 but was %i\n", publish.topic_name_size);
+        failed_assertions++;
+    }
+
+    if (publish.packet_identifier != 0x0000)
+    {
+        printf("Expected packet_identifier to be 0x0000 but was 0x%X\n", publish.packet_identifier);
+        failed_assertions++;
+    }
+
+    if (publish.payload != &(bytes[48]))
+    {
+        printf("Expected payload to be %p but was %p\n", &(bytes[11]), publish.payload);
+        failed_assertions++;
+    }
+
+    if (publish.payload_size != 1)
+    {
+        printf("Expected payload_size to be 1 but was %i\n", publish.payload_size);
+        printf("%.*s\n", publish.payload_size, publish.payload);
+        failed_assertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
+}
+
 static uint16_t it_should_unpack_a_suback_packet()
 {
     printf("It should unpack a SUBACK packet\n");

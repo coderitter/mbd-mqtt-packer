@@ -202,6 +202,7 @@ int main()
     printf("\n");
 
     failed_assertions += it_should_unpack_a_publish_packet();
+    failed_assertions += it_should_unpack_a_publish_packet_without_packet_identifier();
 
     printf("\n");
     printf("unpack_mqtt_suback\n");
