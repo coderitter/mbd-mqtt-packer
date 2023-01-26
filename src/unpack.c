@@ -109,6 +109,9 @@ void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_pac
         publish_packet->packet_identifier = (bytes[packet_identifier_position] << 8) + bytes[packet_identifier_position + 1];
     }
 
+    // Fixed_header_size_size
+    publish_packet->variable_header_size = publish_packet->topic_name_size + packet_identifier_length + 2;
+
     // Fixed header size + topic name size value + topic name size + packet identifier
     publish_packet->payload = &(bytes[packet->fixed_header_size + 2 + publish_packet->topic_name_size + packet_identifier_length]);
     // Remaining size - topic name size value - topic name size - packet identifier

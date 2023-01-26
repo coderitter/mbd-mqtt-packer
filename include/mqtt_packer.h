@@ -350,6 +350,11 @@ typedef struct mqtt_publish_packet
     uint8_t qos;
 
     /**
+     * @brief Contains the length of variable header, is only used in unpack_mqtt_publish 
+    */
+    uint16_t variable_header_size;
+
+    /**
      * @brief 
      * 
      * [MQTT-3.3.1-5] If the RETAIN flag is set to 1, in a PUBLISH Packet sent by a Client to a Server, the Server MUST store the Application Message and its QoS, so that it can be delivered to future subscribers whose subscriptions match its topic name.
