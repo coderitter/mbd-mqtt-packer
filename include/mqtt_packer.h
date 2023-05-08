@@ -163,7 +163,7 @@ typedef struct mqtt_connect_packet
      * [MQTT-3.1.3-8] If the Client supplies a zero-byte ClientId with CleanSession set to 0, the Server MUST respond to the CONNECT Packet with a CONNACK return code 0x02 (Identifier rejected) and then close the Network Connection.
      * [MQTT-3.1.3-9] If the Server rejects the ClientId it MUST respond to the CONNECT Packet with a CONNACK return code 0x02 (Identifier rejected) and then close the Network Connection.
      */
-    uint8_t* client_identifier;
+    const uint8_t* client_identifier;
 
     /**
      * @brief The size of the Client Identifier
@@ -199,7 +199,7 @@ typedef struct mqtt_connect_packet
      * [MQTT-3.1.2-8] If the Will Flag is set to 1 this indicates that, if the Connect request is accepted, a Will Message MUST be stored on the Server and associated with the Network Connection. The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet.
      * [MQTT-3.1.3-10] The Will Topic MUST be a UTF-8 encoded string.
      */
-    uint8_t* will_topic;
+    const uint8_t* will_topic;
     uint16_t will_topic_size;
 
     /**
@@ -219,7 +219,7 @@ typedef struct mqtt_connect_packet
      * [MQTT-3.1.2-11] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload.
      * [MQTT-3.1.2-12] If the Will Flag is set to 0, a Will Message MUST NOT be published when this Network Connection ends.
      */
-    uint8_t* will_message;
+    const uint8_t* will_message;
     uint8_t will_message_size;
 
     /**
@@ -250,7 +250,7 @@ typedef struct mqtt_connect_packet
      * [MQTT-3.1.2-18] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload.
      * [MQTT-3.1.2-19] If the User Name Flag is set to 1, a user name MUST be present in the payload.
      */
-    uint8_t* username;
+    const uint8_t* username;
     uint16_t username_size;
 
     /**
@@ -260,7 +260,7 @@ typedef struct mqtt_connect_packet
      * [MQTT-3.1.2-21] If the Password Flag is set to 1, a password MUST be present in the payload.
      * [MQTT-3.1.2-22] If the User Name Flag is set to 0, the Password Flag MUST be set to 0.
      */
-    uint8_t* password;
+    const uint8_t* password;
     uint16_t password_size;
 
     /**
@@ -377,7 +377,7 @@ typedef struct mqtt_publish_packet
      * [MQTT-3.3.2-2] The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters.
      * [MQTT-3.3.2-3] The Topic Name in a PUBLISH Packet sent by a Server to a subscribing Client MUST match the Subscription’s Topic Filter according to the matching process.
      */
-    uint8_t* topic_name;
+    const uint8_t* topic_name;
     uint16_t topic_name_size;
 
     /**
@@ -387,7 +387,7 @@ typedef struct mqtt_publish_packet
      * The length of the payload can be calculated by subtracting the length of the variable header from the Remaining Length field that is in the Fixed Header.
      * It is valid for a PUBLISH Packet to contain a zero length payload.
      */
-    uint8_t* payload;
+    const uint8_t* payload;
     uint32_t payload_size;
 } mqtt_publish_packet_t;
 
@@ -418,7 +418,7 @@ typedef struct mqtt_un_subscribe_packet
      * [MQTT-3-8.3-4] The Server MUST treat a SUBSCRIBE packet as malformed and close the Network Connection if any of Reserved bits in the payload are non-zero, or QoS is not 0,1 or 2.
      * [MQTT-3.8.4-3] If a Server receives a SUBSCRIBE Packet containing a Topic Filter that is identical to an existing Subscription’s Topic Filter then it MUST completely replace that existing Subscription with a new Subscription. The Topic Filter in the new Subscription will be identical to that in the previous Subscription, although its maximum QoS value could be different. Any existing retained messages matching the Topic Filter MUST be re-sent, but the flow of publications MUST NOT be interrupted.
      */
-    uint8_t* topic_filter;
+    const uint8_t* topic_filter;
     uint16_t topic_filter_size;
 
     /**
@@ -622,10 +622,10 @@ uint32_t pack_mqtt_disconnect(uint8_t* bytes);
  * @param size The current number of bytes in the MQTT packet.
  * @param packet The struct which will hold the unpacked information about the MQTT packet.ss
  */
-void unpack_mqtt_packet(uint8_t* bytes, uint32_t size, mqtt_packet_t* packet);
-void unpack_mqtt_packet_identifier(uint8_t* bytes, mqtt_packet_t* packet, uint16_t* packet_identifier);
-void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet);
-void unpack_mqtt_connack(uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet);
-void unpack_mqtt_suback(uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* suback_packet);
+void unpack_mqtt_packet(const uint8_t* bytes, uint32_t size, mqtt_packet_t* packet);
+void unpack_mqtt_packet_identifier(const uint8_t* bytes, mqtt_packet_t* packet, uint16_t* packet_identifier);
+void unpack_mqtt_publish(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet);
+void unpack_mqtt_connack(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet);
+void unpack_mqtt_suback(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* suback_packet);
 
 #endif

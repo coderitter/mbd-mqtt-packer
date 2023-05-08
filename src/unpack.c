@@ -1,11 +1,6 @@
 #include <mqtt_packer.h>
 
-void unpack_mqtt_packet
-(
-    uint8_t* bytes, 
-    uint32_t size,
-    mqtt_packet_t* packet
-)
+void unpack_mqtt_packet (const uint8_t* bytes, uint32_t size, mqtt_packet_t* packet)
 {
     // Read the first of two bytes of the fixed header which is always present
     if (size >= 1)
@@ -65,7 +60,7 @@ void unpack_mqtt_packet
     packet->size = packet->fixed_header_size + packet->remaining_size;
 }
 
-void unpack_mqtt_packet_identifier(uint8_t* bytes, mqtt_packet_t* packet, uint16_t* packet_identifier)
+void unpack_mqtt_packet_identifier(const uint8_t* bytes, mqtt_packet_t* packet, uint16_t* packet_identifier)
 {
     if
     (
@@ -80,13 +75,13 @@ void unpack_mqtt_packet_identifier(uint8_t* bytes, mqtt_packet_t* packet, uint16
     }
 }
 
-void unpack_mqtt_connack(uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet)
+void unpack_mqtt_connack(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet)
 {    
     connack_packet->session_present = bytes[2] & 0x01 ? 1 : 0;
     connack_packet->return_code = bytes[3];
 }
 
-void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet)
+void unpack_mqtt_publish(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet)
 {
     publish_packet->dup = bytes[0] & 0x08 ? 1 : 0;
     publish_packet->qos = (bytes[0] & 0x06) >> 1;
@@ -118,7 +113,7 @@ void unpack_mqtt_publish(uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_pac
     publish_packet->payload_size = packet->remaining_size - 2 - publish_packet->topic_name_size - packet_identifier_length;
 }
 
-void unpack_mqtt_suback(uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* subAckPacket)
+void unpack_mqtt_suback(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* subAckPacket)
 {
     subAckPacket->packet_identifier = (bytes[packet->fixed_header_size] << 8) + bytes[packet->fixed_header_size + 1];
     subAckPacket->return_code = bytes[packet->fixed_header_size + 2];
