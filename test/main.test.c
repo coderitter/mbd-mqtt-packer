@@ -112,6 +112,7 @@ int main()
     printf("\n");
 
     failed_assertions += it_should_pack_publish();
+    failed_assertions += it_should_pack_publish_with_qos_0();
 
     printf("\n");
     printf("pack_mqtt_puback\n");

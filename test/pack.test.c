@@ -775,6 +775,121 @@ static uint16_t it_should_pack_publish()
     return failed_assertions;
 }
 
+static uint16_t it_should_pack_publish_with_qos_0(){
+    printf("It should pack PUBLISH with qos = 0\n");
+    uint16_t failed_assertions = 0;
+
+    uint8_t topic_name[] = "TOPIC";
+    uint8_t payload[] = { 0x00, 0x01, 0x02 };
+
+    mqtt_publish_packet_t packet = {
+        .packet_identifier = 0xAABB,
+        .dup = 1,
+        .qos = MQTT_QOS_AT_MOST_ONCE,
+        .retain = 1,
+        .topic_name = topic_name,
+        .topic_name_size = 5,
+        .payload = payload,
+        .payload_size = 3,
+    };
+
+    uint8_t bytes[12];
+    uint32_t size = pack_mqtt_publish(bytes, &packet);
+
+    if (size != 12)
+    {
+        printf("Expected size to be 12 but was %i\n", size);
+        failed_assertions++;
+    }
+
+    // Fixed header - Packet type
+    if (bytes[0] != 0x39)
+    {
+        printf("Expected byte[0] to be 0x39 but was 0x%X\n", bytes[0]);
+        failed_assertions++;
+    }
+
+    // Fixed header - Remaining length
+    if (bytes[1] != 10)
+    {
+        printf("Expected byte[1] to be 10 but was %i\n", bytes[1]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - Length MSB
+    if (bytes[2] != 0x00)
+    {
+        printf("Expected byte[2] to be 0x00 but was 0x%X\n", bytes[2]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - Length LSB
+    if (bytes[3] != 0x05)
+    {
+        printf("Expected byte[3] to be 0x05 but was 0x%X\n", bytes[3]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - T
+    if (bytes[4] != 0x54)
+    {
+        printf("Expected byte[4] to be 0x54 but was 0x%X\n", bytes[4]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - O
+    if (bytes[5] != 0x4F)
+    {
+        printf("Expected byte[5] to be 0x4F but was 0x%X\n", bytes[5]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - P
+    if (bytes[6] != 0x50)
+    {
+        printf("Expected byte[6] to be 0x50 but was 0x%X\n", bytes[6]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - I
+    if (bytes[7] != 0x49)
+    {
+        printf("Expected byte[7] to be 0x49 but was 0x%X\n", bytes[7]);
+        failed_assertions++;
+    }
+
+    // Variable header - Topic name - C
+    if (bytes[8] != 0x43)
+    {
+        printf("Expected byte[8] to be 0x43 but was 0x%X\n", bytes[8]);
+        failed_assertions++;
+    }
+
+    // Payload - Byte 1
+    if (bytes[9] != 0x00)
+    {
+        printf("Expected byte[9] to be 0x00 but was 0x%X\n", bytes[9]);
+        failed_assertions++;
+    }
+
+    // Payload - Byte 2
+    if (bytes[10] != 0x01)
+    {
+        printf("Expected byte[10] to be 0x01 but was 0x%X\n", bytes[10]);
+        failed_assertions++;
+    }
+
+    // Payload - Byte 3
+    if (bytes[11] != 0x02)
+    {
+        printf("Expected byte[11] to be 0x02 but was 0x%X\n", bytes[11]);
+        failed_assertions++;
+    }
+
+    printf("Failed assertions: %i\n\n", failed_assertions);
+    return failed_assertions;
+}
+
 static uint16_t it_should_pack_puback()
 {
     printf("It should pack PUBACK\n");
