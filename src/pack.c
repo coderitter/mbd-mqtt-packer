@@ -509,11 +509,15 @@ uint32_t pack_mqtt_publish(uint8_t *bytes, mqtt_publish_packet_t* packet)
 
     /**
      * Variable header - Packet Identifier
+     * 
+     * [MQTT-3.3.2.2] The Packet Identifier field is only present in PUBLISH Packets where the QoS level is 1 or 2. Section 2.3.1 provides more information about Packet Identifiers.
      */
-    bytes[size] = (uint8_t) (packet->packet_identifier >> 8);
-    size++;
-    bytes[size] = (uint8_t) packet->packet_identifier;
-    size++;
+    if (packet->qos != 0) {
+        bytes[size] = (uint8_t) (packet->packet_identifier >> 8);
+        size++;
+        bytes[size] = (uint8_t) packet->packet_identifier;
+        size++;
+    }
 
     /**
      * Payload
