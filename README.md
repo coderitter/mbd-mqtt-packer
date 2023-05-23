@@ -55,3 +55,68 @@ chunk_size = socket_read(socket, &(p->bytes[size]), junk_size < p->max_chunk_siz
 
 ## Encoding MQTT packets
 
+If you want to encode an MQTT packet you need to choose a suitable function. These functions are defined in the `mqtt_packer.h` header.   
+   
+You need to choose between:   
++ `pack_mqtt_connect(uint8_t* bytes, mqtt_connect_packet_t* packet);`
++ `pack_mqtt_publish(uint8_t* bytes, mqtt_publish_packet_t* packet);`
++ `pack_mqtt_subscribe(uint8_t* bytes, mqtt_un_subscribe_packet_t* packet);`
++ `pack_mqtt_unsubscribe(uint8_t* bytes, mqtt_un_subscribe_packet_t* packet);`  
+   
+The functions pack the content of the respective struct into the *bytes*.   
+   
+An example for a *publish packet* would look like this:
+    
+```c
+mqtt_publish_packet_t hello_world_packet;
+
+hello_world_packet.dup = 0;
+hello_world_packet.qos = 0;
+hello_world_packet.retain = 0;
+hello_world_packet.topic_name = (const uint8_t *)"h/w";
+hello_world_packet.topic_name_size = strlen((const char *)hello_world_packet.topic_name);
+hello_world_packet.payload = (const uint8_t *)"abc";
+hello_world_packet.payload_size = strlen((const char *)hello_world_packet.payload);
+```
+   
+The byte array could look like this. 
+```c
+uint8_t publish_hello_world_bytes[50];
+```
+   
+In this example the byte array holds 50 bytes.   
+   
+Now you can pack the information into the byte array.   
+   
+```c
+uint32_t publish_size = pack_mqtt_publish(publish_hello_world_bytes, &hello_world_packet);
+```
+The `pack_mqtt_publish()` returns the size of the publish packet you just packed into the byte array.
+
+## Development: How to test
+
+If you want to test the pack and unpack functionality simply use the make command.
+```bash
+make 
+```
+
+
+The console output should look like this:
+```bash
+
+get_mqtt_remaining_length_size
+--------------------------
+
+It should get the correct remaining length size for a 1 byte length
+Failed assertions: 0
+
+
+...
+
+It should unpack a SUBACK packet
+Failed assertions: 0
+
+
+Total failed assertions: 0
+```
+
