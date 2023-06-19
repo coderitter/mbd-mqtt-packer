@@ -1,30 +1,27 @@
-GCC := gcc
+CC := gcc
 
 SRC := $(wildcard src/*.c)
-TEST := $(wildcard test/*.c)
+TEST := test/main.test.c
 OBJ := $(SRC:src/%.c=build/obj/%.o)
 
-build/libs/libmbd-mqtt-packer.a: $(OBJ)
-	mkdir -p build/libs
+.PHONY: runtest
+runtest: build/test
+	./build/test
+
+build/test: $(SRC) $(TEST) build/libmbd-mqtt-packer.a
+	mkdir -p build
+	${CC} -std=c99 $(TEST) -o build/test \
+	-Iinclude \
+	-lmbd-mqtt-packer -Lbuild
+
+build/libmbd-mqtt-packer.a: $(OBJ)
+	mkdir -p build
 	ar rcs $@ $(OBJ)
 
 build/obj/%.o: src/%.c
 	mkdir -p build/obj
-	$(GCC) -c $< -o $@ -g -Wall -Iinclude -Ilibs/mbd-mqtt-packer/include
+	$(CC) -c $< -o $@ -g -Wall -Iinclude
 
-runtest: ./build/test
-	./build/test
-
-.PHONY: test
-test: ./build/test
-
-.PHONY: build
-build: ./build/test
-
-./build/test: $(SRC) $(TEST) 
-	mkdir -p build
-	${GCC} -std=c99 test/main.test.c build/libmbd-mqtt-client.a -o build/test \
-	-Iinclude
 .PHONY: clean
 clean:
-	rm -r build
+	rm -r -f build

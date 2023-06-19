@@ -93,7 +93,9 @@ uint32_t publish_size = pack_mqtt_publish(publish_hello_world_bytes, &hello_worl
 ```
 The `pack_mqtt_publish()` returns the size of the publish packet you just packed into the byte array.
 
-## Development: How to test
+## Development
+
+### Build test
 
 If you want to test the pack and unpack functionality simply use the make command.
 ```bash
@@ -120,3 +122,16 @@ Failed assertions: 0
 Total failed assertions: 0
 ```
 
+### Build library
+
+If you want to build the library simply use the make command.
+```bash
+make build/libmbd-mqtt-packer.a
+```
+
+### Build with different compiler
+
+If you want to use a different compiler, use overrdide CC
+```
+make build/libmbd-mqtt-packer.a CC=riscv32-unknown-elf-gcc
+```
