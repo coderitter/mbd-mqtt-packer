@@ -1,6 +1,8 @@
 CC := gcc
+CFLAGS := -g -Wall -Wextra
 
 SRC := $(wildcard src/*.c)
+INCLUDE := $(wildcard include/*.h)
 TEST := test/main.test.c
 OBJ := $(SRC:src/%.c=build/obj/%.o)
 
@@ -8,9 +10,10 @@ OBJ := $(SRC:src/%.c=build/obj/%.o)
 runtest: build/test
 	./build/test
 
-build/test: $(SRC) $(TEST) build/libmbd-mqtt-packer.a
+build/test: $(SRC) $(INCLUDE) $(TEST) build/libmbd-mqtt-packer.a
 	mkdir -p build
-	${CC} -std=c99 $(TEST) -o build/test \
+	$(CC) -std=c99 $(TEST) -o build/test \
+	$(CFLAGS) \
 	-Iinclude \
 	-lmbd-mqtt-packer -Lbuild
 
@@ -20,7 +23,7 @@ build/libmbd-mqtt-packer.a: $(OBJ)
 
 build/obj/%.o: src/%.c
 	mkdir -p build/obj
-	$(CC) -c $< -o $@ -g -Wall -Iinclude
+	$(CC) -c $< -o $@ $(CFLAGS) -Iinclude
 
 .PHONY: clean
 clean:
