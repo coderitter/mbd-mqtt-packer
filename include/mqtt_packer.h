@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief After a Network Connection is established by a Client to a Server, the first Packet sent from the Client to the Server MUST be a CONNECT Packet.
  */
@@ -627,5 +631,9 @@ void unpack_mqtt_packet_identifier(const uint8_t* bytes, mqtt_packet_t* packet, 
 void unpack_mqtt_publish(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_publish_packet_t* publish_packet);
 void unpack_mqtt_connack(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_connack_packet_t* connack_packet);
 void unpack_mqtt_suback(const uint8_t* bytes, mqtt_packet_t* packet, mqtt_suback_packet_t* suback_packet);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
